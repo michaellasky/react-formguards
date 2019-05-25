@@ -45,15 +45,12 @@ const ValidatedForm = ({
     setFormVals({});
   }
 
-  function _onChange ({target}) {
-    let { name, value, options, checked, type } = target;
+  function _onChange (e, onChange = () => {}) {
+    let { target: { name, value, options, checked, type } } = e;
 
     if (type === 'checkbox') {
-      // A checkbox will pass the current state on change
-      // so if it wasn't checked, when clicked it'll pass "false" to the change
-      // function as its value.  Clicking the checked checkbox will pass "true".  
-      // If value isn't "true" || "false" then that means the tag has a value
-      // attribute and we'll just use that.
+      // A checkbox will pass the *current* state on change as string on click
+      // Invert it because we want the form variable to to hold the after-click state  
       if      (value === 'true')  { value = false;    }
       else if (value === 'false') { value = true;     }
       else if (!checked)          { value = undefined } 
@@ -65,6 +62,7 @@ const ValidatedForm = ({
     }
     mergeState(name, { dirty: true });
     setFormVal(name, value);
+    onChange(e);
   }
 
   function mergeState (name, st) {
@@ -73,67 +71,68 @@ const ValidatedForm = ({
 
   function setFormVal (name, val) {
     if (val === undefined) {
-      delete vals[name]; // don't like mutating vals, but cleaner than reducer
-      setFormVals(vals);
+      // delete vals[name]; this might be cleaner, even w/ mutation
+      const newVals = Object.entries(vals).reduce((acc, [key, val]) => 
+        (key === name)? acc: { ...acc, [`${key}`]: val 
+      });
+      setFormVals(newVals);
     }
     else {
       setFormVals({ ...vals, [`${name}`]: val });
     }
   }
 
-  function injectProps (children = []) {
-    return React.Children.map(children, (child, key) => {
+  function injectProps (nodes = []) {
+    return React.Children.map(nodes, (child, key) => {
       if (!child || !child.props) { return child; }
 
-      const props = child.props;
-      const grandkids = child.props.children;
-      const isFormElement = formTypes.includes(child.type);
-      const isGuard = props.watches && props.validatesWith;
-
+      const { props, type } = child;
+      const { children } = props;
+      const gKids = children? injectProps(children): children;
+      const isFormElement = formTypes.includes(type);
+      const isGuard = type === FormGuard;
+      
       if      (isFormElement) { return handleFormElement(child, key); }
       else if (isGuard)       { return handleFormGuard(child, key);   }
-      else                    { 
-        return React.cloneElement(child, {}, injectProps(grandkids)); 
-      }
+      else {                    return React.cloneElement(child, {}, gKids); }
     });
 
     function handleFormElement (child, key) {
-      if (child.props.type === 'submit') { return child; }
-
       const props = child.props;
-      const { type, name } = props;
+      const { type, name, onChange } = props;
       const defValue = defautValues[type];
       const value = type === 'radio' 
                       ? props.value  // radios share same name w/ diff vals 
                       : vals[name] || props.value || defValue;
-
       const {isvalid, dirty} = state[name] || {};
       const inputInvalid = isvalid !== undefined && !isvalid && dirty;
+
+      if (type === 'submit') { return child; }
 
       const className = classnames(
         props.className,
         { 'input-invalid': inputInvalid });
 
-      const onChange = (e) => {
-        if (props.onChange) { props.onChange(e); }
-        _onChange(e);
-      }
-
       return React.cloneElement(child, {
-        value, className, key,  onChange
+        value, className, key, onChange: (e) => _onChange(e, onChange) 
       });
     }
 
     function handleFormGuard (child, key) {
-      const name = child.props.watches;
-      const value = vals[name] || '';
+      const watches = (!Array.isArray(child.props.watches))
+                        ? [child.props.watches]
+                        : child.props.watches;
 
-      if (!state[name] || !state[name].validated) {
-        mergeState(name, { validated: true });
-      }
-
+      const value = watches.map(name => vals[name] || '');
+      
+      watches.forEach(name => {
+        if (!state[name] || !state[name].validated) {
+          mergeState(name, { validated: true });
+        }
+      });
+      
       return React.cloneElement(child, {
-        state: state[name], key, mergeState, value
+        state, key, mergeState, value
       });
     }
   }
@@ -173,13 +172,21 @@ export const FormGuard = ({
   validatesWith,
   value
 }) => {
-  const isvalid = validatesWith(value);
-  const markValid = isvalid && state.isvalid === undefined;
-  const invalidate = !isvalid && state.isvalid !== false;
+  const isvalid = !!validatesWith.apply(null, value);
+  let isDirty = false;
+  
+  if (!Array.isArray(watches)) { watches = [watches]; }
 
-  if (invalidate || markValid) { mergeState(watches, { isvalid }); }
-
-  return !isvalid && state.dirty === true &&
+  watches.forEach(watch => {
+    const st = state[watch];
+    const markValid = isvalid && st && st.isvalid === undefined;
+    const invalidate = !isvalid &&  st && st.isvalid !== false;
+  
+    if (invalidate || markValid) { mergeState(watch, { isvalid }); }
+    isDirty = isDirty || (st && st.dirty); 
+  });
+  
+  return !isvalid && isDirty === true &&
     <span className='form-invalid-message'>{children}</span>;
 }
 

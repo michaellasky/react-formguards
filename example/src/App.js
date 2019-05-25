@@ -9,6 +9,9 @@ export default class App extends Component {
     }
 
     return (
+      <>
+      <h1>react-formguards</h1>
+      <h3>A simple, declarative approach to client side validation.</h3>
       <div>
         <ValidatedForm onSubmit={onSubmit} >
             <label htmlFor='value_111'>Value 1</label>
@@ -42,8 +45,8 @@ export default class App extends Component {
 
             <br />
             <FormGuard
-              watches='theInput41'
-              validatesWith={(val) => val === '1' || val === '2'}>
+              watches={['theInput41', 'theInput42']}
+              validatesWith={(val1, val2) => (val1 || val2) }>
               Error Message
             </FormGuard>
             <label htmlFor='theInput41'>Test41:</label>
@@ -54,6 +57,7 @@ export default class App extends Component {
             <input type='submit' value='Submit' />
         </ValidatedForm>
       </div>
+      </>
     )
   }
 }

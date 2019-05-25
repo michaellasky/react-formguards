@@ -46,6 +46,39 @@ describe('ValidatedForm', () => {
     expect(queryByText('Error Message', container)).toBe(null);
   });
 
+  it('ForGuards can watch multiple parameters by passing an array to watches', () => {
+    const expectedValue = 'Expected Value';
+    const onSubmit = jest.fn();
+
+    const { getByText, queryByText, getByLabelText, container } = render(
+      <ValidatedForm onSubmit={onSubmit}>
+        <FormGuard
+          watches={['theInput', 'theInput2']}
+          validatesWith={(val, val2) => val === expectedValue || val2 === expectedValue}>
+          Error Message
+        </FormGuard>
+        <label htmlFor='theInput'>Test:</label>
+        <input type='text' id='theInput' name='theInput' />
+        <label htmlFor='theInput2'>Test2:</label>
+        <input type='text' id='theInput2' name='theInput2' />
+        <input type='submit' value='Submit' />
+      </ValidatedForm>
+    );
+
+    const input = getByLabelText('Test:', container);
+    const input2 = getByLabelText('Test2:', container);
+
+    fireEvent.change(input, { target: { value: 'Some Text' } });
+    expect(getByText('Error Message', container)).toBeTruthy();
+
+    fireEvent.change(input, { target: { value: '' } });
+    fireEvent.change(input2, { target: { value: 'Some Text' } });
+    expect(getByText('Error Message', container)).toBeTruthy();
+
+    fireEvent.change(input, { target: { value: expectedValue } });
+    expect(queryByText('Error Message', container)).toBe(null);
+  });
+
   describe('Passes non-validated input values through onSubmit', () => {
     it('<input type=text />', () => {
 
@@ -245,6 +278,7 @@ describe('ValidatedForm', () => {
   });
 
   describe('Shows error message when input is invalid', () => {
+
     it('<input type="text" />', () => {
       const expectedValue = 'Expected Value';
       const onSubmit = jest.fn();
@@ -272,7 +306,6 @@ describe('ValidatedForm', () => {
     });
 
     it('<select />', () => {
-
       const onSubmit = jest.fn();
 
       const { getByText, queryByText, getByLabelText, container } = render(
@@ -396,7 +429,7 @@ describe('ValidatedForm', () => {
       expect(queryByText('Error Message', container)).toBeTruthy();
     });
 
-    it('<input type="text" />', () => {
+    it('<textarea />', () => {
       const expectedValue = 'Expected Value';
       const onSubmit = jest.fn();
 
@@ -424,8 +457,8 @@ describe('ValidatedForm', () => {
   });
 
   describe('Only calls onSubmit when input is valid', () => {
-    it('<input type="text" />', () => {
 
+    it('<input type="text" />', () => {
       const expectedValue = 'Expected Value';
       const onSubmit = jest.fn();
 
