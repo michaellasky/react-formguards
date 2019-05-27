@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/react-formguards/static/css/main.2472f3c7.chunk.css",
+    "main.js": "/react-formguards/static/js/main.998a00ad.chunk.js",
+    "main.js.map": "/react-formguards/static/js/main.998a00ad.chunk.js.map",
+    "runtime~main.js": "/react-formguards/static/js/runtime~main.b5ac827e.js",
+    "runtime~main.js.map": "/react-formguards/static/js/runtime~main.b5ac827e.js.map",
+    "static/js/2.4dd93966.chunk.js": "/react-formguards/static/js/2.4dd93966.chunk.js",
+    "static/js/2.4dd93966.chunk.js.map": "/react-formguards/static/js/2.4dd93966.chunk.js.map",
+    "index.html": "/react-formguards/index.html",
+    "precache-manifest.57cddc014585577cf739e3d5ccd385e8.js": "/react-formguards/precache-manifest.57cddc014585577cf739e3d5ccd385e8.js",
+    "service-worker.js": "/react-formguards/service-worker.js",
+    "static/css/main.2472f3c7.chunk.css.map": "/react-formguards/static/css/main.2472f3c7.chunk.css.map"
+  }
+}
