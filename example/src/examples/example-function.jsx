@@ -1,5 +1,5 @@
 import React from 'react';
-import ValidatedForm, { FormGuard } from 'react-formguards'
+import { ValidatedForm, FormGuard } from 'react-formguards'
 
 const ExampleFunction = () => {
 

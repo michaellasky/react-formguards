@@ -54,6 +54,16 @@ span.validation-error {
   color: #ff0000;
 }
 
+#example-style .input-invalid {
+  outline: 3px solid #0000ff;
+}
+
+#example-style span.validation-error {
+  float: right;
+  font-weight: bold;
+  color: #00ff00;
+}
+
 textarea {
   height: 10em;
 }

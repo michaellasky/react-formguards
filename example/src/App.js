@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import ExampleBasic from './examples/example-basic';
 import ExampleFunction from './examples/example-function';
 import ExampleMultipleWatches from './examples/example-multiple-watches';
+import ExampleStyle from './examples/example-style';
 
 const App = () => {
     return (
@@ -13,6 +14,7 @@ const App = () => {
         <div className='example'>
           <div className='example-code'>
             <h2>Basic Validation</h2>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-basic.jsx'>Source</a>
             <ol>
               <li>
                 Just write your form like normal, replacing your &lt;form&gt; tag with a &lt;ValidatedForm&gt; tag.  Pass it an onSubmit function.
@@ -77,6 +79,7 @@ const App = () => {
         <div className='example'>
           <div className='example-code'>
             <h2>Custom Validation Functions</h2>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-function.jsx'>Source</a>
             <p>Just pass a function to validatesWith to use your own validation functions.</p>
             <pre>
             {`
@@ -101,6 +104,7 @@ const App = () => {
         <div className='example'>
           <div className='example-code'>
             <h2>Guarding Multiple Form Elements with one FormGuard</h2>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-multiple-watches.jsx'>Source</a>
             <p>A FormGuard can watch multiple elements by passing an array to the <i>watches</i> prop</p>
             <p>In this example the <i>validateTwoInputs</i> function requires that either <i>input1</i> OR <i>input2</i> is filled in.</p>
             <pre>
@@ -134,6 +138,46 @@ const App = () => {
           </div>
           <div className='example-implementation'>
             <ExampleMultipleWatches />
+          </div>
+        </div>
+
+        <div className='example'>
+          <div className='example-code'>
+            <h2>Styling / CSS</h2>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-multiple-style.jsx'>Source</a>
+            <p>react-formguards will add the css class 'input-invalid' to form controls that are invalid.</p>
+            <p>The span that displays a FormGuard error text will have the css class 'validation-error'</p>
+            <pre>
+            {`
+    
+    .input-invalid {
+      outline: 3px solid #0000ff;
+    }
+
+    span.validation-error {
+      float: right;
+      font-weight: bold;
+      color: #00ff00;
+    }
+
+    <ValidatedForm onSubmit={(e, formVals) => console.log(formVals)}>
+
+      <label htmlFor='example4-email'>Email:</label>
+      <FormGuard watches='email' validatesWith={validators.required} >
+          Email is required  
+      </FormGuard> 
+      <FormGuard watches='email' validatesWith={validators.email} >
+          Please enter a valid email address  
+      </FormGuard> 
+      <input type='email' name='email' id='example4-email' />  
+      
+      <input type='submit' value='Check the console for onSubmit' />
+    </ValidatedForm>
+            `}            
+            </pre>
+          </div>
+          <div className='example-implementation'>
+            <ExampleStyle />
           </div>
         </div>
         

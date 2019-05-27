@@ -8,7 +8,6 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
-import { isNumber } from 'util';
 
 const formTypes = ['input', 'select', 'textarea'];
 const defaultValues = {
@@ -17,11 +16,8 @@ const defaultValues = {
   'file-multiple': []
 }
 
-const ValidatedForm = ({
-  children,
-  onSubmit,
-  formVals = {}
-}) => {
+export const ValidatedForm = (props) => {
+  const { children, onSubmit, formVals = {} } = props; 
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
 
@@ -44,7 +40,6 @@ const ValidatedForm = ({
 
     if (type === 'checkbox') {
       // A checkbox will pass the *current* state on change as string on click
-      // Invert it because we want the form variable to to hold the after-click state  
       if      (value === 'true')  { value = false;    }
       else if (value === 'false') { value = true;     }
       else if (!checked)          { value = undefined } 
@@ -140,7 +135,7 @@ const ValidatedForm = ({
                           { 'input-invalid': inputInvalid });
       
       return (isSubmissionType)? child: React.cloneElement(child, {
-        value, checked, className, key, onChange: (e) => _onChange(e, onChange) 
+        ...props, value, checked, className, key, onChange: (e) => _onChange(e, onChange) 
       });
     }
 
@@ -184,7 +179,7 @@ const ValidatedForm = ({
   }
 
   return (
-    <form onSubmit={_onSubmit}>
+    <form {...props} onSubmit={_onSubmit}>
       {injectProps(children)}
     </form>
   );
@@ -230,7 +225,7 @@ export const validators = {
     return (value = '') => value.length <= len;
   },
   required: function(value = '') {
-    return isNumber(value) || ( 
+    return typeof value === 'number' || ( 
               value !== null &&
               value !== undefined && 
               value.length !== 0 && 
@@ -242,4 +237,3 @@ export const validators = {
 export const EMAIL_REGEX = /^$|(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 export const PHONE_REGEX = /^$|^(\+\d{1,3})?\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/;
 
-export default ValidatedForm;
