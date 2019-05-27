@@ -8,6 +8,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
+import { isNumber } from 'util';
 
 const formTypes = ['input', 'select', 'textarea'];
 const defaultValues = {
@@ -223,13 +224,18 @@ export const validators = {
     return EMAIL_REGEX.test(value);
   },
   minLength: function (len) {
-    return (value = '') => value.length > len;
+    return (value = '') => value.length >= len;
   },
   maxLength: function(len) {
-    return (value = '') => value.length < len;
+    return (value = '') => value.length <= len;
   },
   required: function(value) {
-    return value !== undefined && value.length > 0;
+    return isNumber(value) || ( 
+              value !== null &&
+              value !== undefined && 
+              value.length !== 0 && 
+              Object.keys(value).length !== 0 && 
+              value !== '');
   }
 }
 
