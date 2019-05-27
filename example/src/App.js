@@ -144,7 +144,7 @@ const App = () => {
         <div className='example'>
           <div className='example-code'>
             <h2>Styling / CSS</h2>
-            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-multiple-style.jsx'>Source</a>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-style.jsx'>Source</a>
             <p>react-formguards will add the css class 'input-invalid' to form controls that are invalid.</p>
             <p>The span that displays a FormGuard error text will have the css class 'validation-error'</p>
             <pre>
