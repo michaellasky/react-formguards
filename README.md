@@ -56,4 +56,4 @@ export default ExampleBasic;
 
 ## License
 
-MIT © [NuclearHorseStudios](https://github.com/NuclearHorseStudios)
+MIT © [Michael Lasky](https://github.com/NuclearHorseStudios)
