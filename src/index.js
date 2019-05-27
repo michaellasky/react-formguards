@@ -229,7 +229,7 @@ export const validators = {
   maxLength: function(len) {
     return (value = '') => value.length <= len;
   },
-  required: function(value) {
+  required: function(value = '') {
     return isNumber(value) || ( 
               value !== null &&
               value !== undefined && 
