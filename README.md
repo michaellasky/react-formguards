@@ -2,7 +2,7 @@
 
 > Simple client side form validation
 
-[![NPM](https://img.shields.io/npm/v/react-formguards.svg)](https://www.npmjs.com/package/react-formguards) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![NPM](https://img.shields.io/npm/v/react-formguards.svg)](https://www.npmjs.com/package/react-formguards) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![SIZE](https://img.shields.io/bundlephobia/min/react-formguards.svg)](https://www.npmjs.com/package/react-formguards)
 
 ## Install
 
