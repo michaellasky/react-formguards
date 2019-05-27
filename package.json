@@ -1,10 +1,13 @@
 {
   "name": "react-formguards",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Simple client side form validation",
   "author": "NuclearHorseStudios",
   "license": "MIT",
-  "repository": "NuclearHorseStudios/react-formguards",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NuclearHorseStudios/react-formguards.git"
+  },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
@@ -60,6 +63,23 @@
     "dist"
   ],
   "dependencies": {
-    "classnames": "^2.2.6"
-  }
+    "classnames": "^2.2.6",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1"
+  },
+  "bugs": {
+    "url": "https://github.com/NuclearHorseStudios/react-formguards/issues"
+  },
+  "homepage": "https://github.com/NuclearHorseStudios/react-formguards#readme",
+  "directories": {
+    "example": "example"
+  },
+  "keywords": [
+    "react",
+    "declarative",
+    "client",
+    "side",
+    "form",
+    "validation"
+  ]
 }

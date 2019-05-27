@@ -79,6 +79,146 @@ describe('ValidatedForm', () => {
     expect(queryByText('Error Message', container)).toBe(null);
   });
 
+  describe('Sets initial values equal to the formVals prop', () => {
+    it('<input type=text />', () => {
+
+      const onSubmit = jest.fn();
+      const { getByText, container } = render(
+        <ValidatedForm onSubmit={onSubmit} formVals={{input1: '1', input2: '2'}}>
+          <label htmlFor='input1'>Test 1:</label>
+          <input type='text' id='input1' name='input1' />
+
+          <label htmlFor='input1'>Test 2:</label>
+          <input type='text' id='input1' name='input1' />
+
+          <input type='submit' value='Submit' />
+        </ValidatedForm>
+      );
+
+      const submit = getByText('Submit', container);
+      fireEvent.click(submit);
+  
+      expect(onSubmit.mock.calls.length).toBe(1);
+      expect(onSubmit.mock.calls[0][1]).toEqual({ input1: '1', input2: '2' });
+    });
+
+    it('<select />', () => {
+  
+      const expectedValue = 'Some Different Text';
+      const onSubmit = jest.fn();
+  
+      const { getByText, container } = render(
+        <ValidatedForm onSubmit={onSubmit} formVals={{ theInput: expectedValue }}>
+          <label htmlFor='theInput'>Test:</label>
+          <select id='theInput' name='theInput'>
+            <option value='Some Text'>Some Text</option>
+            <option value='Some Different Text'>Some Different Text</option>
+            <option value='Some Other Text'>Some Other Text</option>
+          </select>
+          <input type='submit' value='Submit' />
+        </ValidatedForm>
+      );
+  
+      const submit = getByText('Submit', container);
+      fireEvent.click(submit);
+  
+      expect(onSubmit.mock.calls.length).toBe(1);
+      expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: expectedValue });
+    });
+
+    it('<select multiple />', () => {
+  
+      const expectedValue = ['Some Different Text', 'Some Text'];
+      const onSubmit = jest.fn();
+  
+      const { getByText, container } = render(
+        <ValidatedForm onSubmit={onSubmit} formVals={{ theInput: expectedValue }}>
+          <label htmlFor='theInput'>Test:</label>
+          <select multiple id='theInput' name='theInput'>
+            <option value='Some Text'>Some Text</option>
+            <option value='Some Different Text'>Some Different Text</option>
+            <option value='Some Other Text'>Some Other Text</option>
+          </select>
+          <input type='submit' value='Submit' />
+        </ValidatedForm>
+      );
+  
+      const submit = getByText('Submit', container);
+      fireEvent.click(submit);
+  
+      expect(onSubmit.mock.calls.length).toBe(1);
+      expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: expectedValue });
+    });
+
+    it('<input type="radio" />', () => {
+  
+      const onSubmit = jest.fn();
+      const { getByText, container } = render(
+        <ValidatedForm onSubmit={onSubmit} formVals={{ theInput: 'Value 2' }}>
+          <label htmlFor='value_1'>Value 1</label>
+          <input type='radio' id='value_1' name='theInput' value='Value 1' />
+          <label htmlFor='value_2'>Value 2</label>
+          <input type='radio' id='value_2' name='theInput' value='Value 2' />
+          <label htmlFor='value_3'>Value 3</label>
+          <input type='radio' id='value_3' name='theInput' value='Value 3' />
+          <input type='submit' value='Submit' />
+        </ValidatedForm>
+      );
+  
+      const submit = getByText('Submit', container);
+  
+      fireEvent.click(submit);
+  
+      expect(onSubmit.mock.calls.length).toBe(1);
+      expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: 'Value 2' });
+    });
+
+    it('<input type="checkbox" />', () => {
+
+      const onSubmit = jest.fn();
+      const expectedValues = { theInput1: true, theInput3: true };
+
+      const { getByText, container } = render(
+        <ValidatedForm formVals={expectedValues} onSubmit={onSubmit}>
+          <label htmlFor='value_1'>Value 1</label>
+          <input type='checkbox' id='value_1' name='theInput1' />
+          <label htmlFor='value_2'>Value 2</label>
+          <input type='checkbox' id='value_2' name='theInput2' />
+          <label htmlFor='value_3'>Value 3</label>
+          <input type='checkbox' id='value_3' name='theInput3' />
+          <input type='submit' value='Submit' />
+        </ValidatedForm>
+      );
+  
+      const submit = getByText('Submit', container);
+      
+      fireEvent.submit(submit);
+  
+      expect(onSubmit.mock.calls.length).toBe(1);
+      expect(onSubmit.mock.calls[0][1]).toEqual(expectedValues);
+    });
+
+    it('<textarea />', () => {
+      const expectedValue = 'Some Text';
+      const onSubmit = jest.fn();
+  
+      const { getByText, container } = render(
+        <ValidatedForm formVals={{ theInput: expectedValue }} onSubmit={onSubmit}>
+          <label htmlFor='theInput'>Test:</label>
+          <textarea id='theInput' name='theInput' />
+          <input type='submit' value='Submit' />
+        </ValidatedForm>
+      );
+  
+      const submit = getByText('Submit', container);
+  
+      fireEvent.click(submit);
+  
+      expect(onSubmit.mock.calls.length).toBe(1);
+      expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: expectedValue });
+    });  
+  });
+
   describe('Passes non-validated input values through onSubmit', () => {
     it('<input type=text />', () => {
 
@@ -194,37 +334,7 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[1][1]).toEqual({ theInput: 'Value 1' });
     });
   
-    it('<input type="checkbox" /> - Passes values when value is specified', () => {
-
-      const onSubmit = jest.fn();
-      const { getByText, getByLabelText, container } = render(
-        <ValidatedForm onSubmit={onSubmit}>
-          <label htmlFor='value_1'>Value 1</label>
-          <input type='checkbox' id='value_1' name='theInput1' value='Value 1' />
-          <label htmlFor='value_2'>Value 2</label>
-          <input type='checkbox' id='value_2' name='theInput2' value='Value 2' />
-          <label htmlFor='value_3'>Value 3</label>
-          <input type='checkbox' id='value_3' name='theInput3' value='Value 3' />
-          <input type='submit' value='Submit' />
-        </ValidatedForm>
-      );
-  
-      const submit = getByText('Submit', container);
-      const cb1 = getByLabelText('Value 2', container);
-      const cb2 = getByLabelText('Value 3', container);
-  
-      fireEvent.click(cb1);
-      fireEvent.click(cb2);
-      fireEvent.submit(submit);
-  
-      expect(onSubmit.mock.calls.length).toBe(1);
-      expect(onSubmit.mock.calls[0][1]).toEqual({ 
-        theInput2: 'Value 2', 
-        theInput3: 'Value 3' 
-      });
-    });
-
-    it('<input type="checkbox" /> - Passes Boolean when no value is specified', () => {
+    it('<input type="checkbox" />', () => {
 
       const onSubmit = jest.fn();
       const { getByText, getByLabelText, container } = render(
@@ -335,9 +445,7 @@ describe('ValidatedForm', () => {
     });
 
     it('<select multiple />', () => {
-
       const onSubmit = jest.fn();
-  
       const { getByText, queryByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
           <label htmlFor='theInput'>Test:</label>
@@ -370,7 +478,6 @@ describe('ValidatedForm', () => {
 
     it('<input type="radio" />', () => {
       const onSubmit = jest.fn();
-
       const { getByText, queryByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
           <FormGuard
@@ -407,11 +514,11 @@ describe('ValidatedForm', () => {
         <ValidatedForm onSubmit={onSubmit}>
           <FormGuard
             watches='theInput1'
-            validatesWith={(val) => val === '1' || val === '2'}>
+            validatesWith={(val) => val === true}>
             Error Message
           </FormGuard>
           <label htmlFor='theInput1'>Test1:</label>
-          <input type='checkbox' id='theInput1' name='theInput1' value='1' />
+          <input type='checkbox' id='theInput1' name='theInput1' />
           <input type='submit' value='Submit' />
         </ValidatedForm>
       );

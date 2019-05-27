@@ -1,3 +1,4 @@
+/* eslint-disable padded-blocks */
 /* eslint-disable indent */
 /* eslint-disable space-infix-ops */
 /* eslint-disable no-trailing-spaces */
@@ -9,18 +10,10 @@ import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
 
 const formTypes = ['input', 'select', 'textarea'];
-const defautValues = {
+const defaultValues = {
   'checkbox': false,
-  'text': '',
-  'hidden': '',
-  'textarea': '',
-  'email': '',
-  'tel': '',
-  'password': '',
-  'select': [],
   'select-multiple': [],
-  'file': '',
-  'radio': ''
+  'file-multiple': []
 }
 
 const ValidatedForm = ({
@@ -46,7 +39,7 @@ const ValidatedForm = ({
   }
 
   function _onChange (e, onChange = () => {}) {
-    let { target: { name, value, options, checked, type } } = e;
+    let { target: { name, value, options, files, checked, type } } = e;
 
     if (type === 'checkbox') {
       // A checkbox will pass the *current* state on change as string on click
@@ -59,6 +52,9 @@ const ValidatedForm = ({
       value = Array.from(options).reduce((selected, option) =>
         option.selected ? [...selected, option.value] : selected,
       []);
+    }
+    else if (type === 'file') {
+      value = files;
     }
     mergeState(name, { dirty: true });
     setFormVal(name, value);
@@ -98,23 +94,52 @@ const ValidatedForm = ({
     });
 
     function handleFormElement (child, key) {
+
+      function getNormalizedType (child) {
+        if (child.type === 'select' && child.props.multiple) {
+          return 'select-multiple'; 
+        }
+        else if (child.props.type === 'file' && child.props.multiple) {
+          return 'file-multiple';
+        }
+        else { 
+          return child.props.type || child.type; 
+        }
+      }
+
+      function getDefaultValue (type) {
+        return defaultValues[type] === undefined? '' : defaultValues[type];
+      }
+
+      function getValue (type, propsVal, name) {
+        switch (type) {
+          case 'radio': 
+            return propsVal;
+          case 'file-multiple':
+          case 'file':
+            return undefined;
+          default:
+            return vals[name] || propsVal || getDefaultValue(type);
+        }
+      }
+
       const props = child.props;
-      const { type, name, onChange } = props;
-      const defValue = defautValues[type];
-      const value = type === 'radio' 
-                      ? props.value  // radios share same name w/ diff vals 
-                      : vals[name] || props.value || defValue;
+      const { name, onChange } = props;
       const {isvalid, dirty} = state[name] || {};
+      const type = getNormalizedType(child);
+      const value = getValue(type, props.value, name);
       const inputInvalid = isvalid !== undefined && !isvalid && dirty;
-
-      if (type === 'submit') { return child; }
-
+      const checked = (type === 'radio') && (value === vals[name]);
+      const isSubmissionType = type === 'submit' || 
+                               type === 'image'  ||
+                               type === 'reset';
+      
       const className = classnames(
-        props.className,
-        { 'input-invalid': inputInvalid });
-
-      return React.cloneElement(child, {
-        value, className, key, onChange: (e) => _onChange(e, onChange) 
+                          props.className, 
+                          { 'input-invalid': inputInvalid });
+      
+      return (isSubmissionType)? child: React.cloneElement(child, {
+        value, checked, className, key, onChange: (e) => _onChange(e, onChange) 
       });
     }
 
@@ -187,7 +212,7 @@ export const FormGuard = ({
   });
   
   return !isvalid && isDirty === true &&
-    <span className='form-invalid-message'>{children}</span>;
+    <span className='validation-error'>{children}</span>;
 }
 
 export const validators = {
