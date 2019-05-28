@@ -4,7 +4,7 @@
 /* eslint-disable no-multi-spaces */
 /* eslint-disable brace-style */
 /* eslint-disable no-control-regex */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
 
 const formTypes = ['input', 'select', 'textarea'];
@@ -15,7 +15,15 @@ const defaultValues = {
 }
 
 export const ValidatedForm = (props) => {
-  const { children, onSubmit, formVals = {} } = props;
+  const {
+    children,
+    className,
+    id,
+    name,
+    onSubmit,
+    formVals = {}
+  } = props;
+
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
 
@@ -35,31 +43,30 @@ export const ValidatedForm = (props) => {
 
   function injectProps (nodes = []) {
 
-    return React.Children.map(nodes, (child, key) => {
-      if (!child || !child.props) { return child; }
+    return React.Children.map(nodes, (el, key) => {
+      if (!el || !el.props) { return el; }
 
-      const { props, type } = child;
-      const { children } = props;
-      const gKids = children ? injectProps(children) : children;
+      const { props, type } = el;
+      const children = props.children ? injectProps(props.children) : [];
       const isFormElement = formTypes.includes(type);
       const isGuard = type === FormGuard;
 
-      if      (isFormElement) { return handleFormElement(child, key);        }
-      else if (isGuard)       { return handleFormGuard(child, key);          }
-      else                    { return React.cloneElement(child, {}, gKids); }
+      if      (isFormElement) { return handleFormElement(el, key);        }
+      else if (isGuard)       { return handleFormGuard(el, key);          }
+      else                    { return React.cloneElement(el, {}, children); }
     });
 
-    function handleFormElement (child, key) {
+    function handleFormElement (el, key) {
 
-      function getNormalizedType (child) {
-        if (child.type === 'select' && child.props.multiple) {
+      function getNormalizedType (el) {
+        if (el.type === 'select' && el.props.multiple) {
           return 'select-multiple';
         }
-        else if (child.props.type === 'file' && child.props.multiple) {
+        else if (el.props.type === 'file' && el.props.multiple) {
           return 'file-multiple';
         }
         else {
-          return child.props.type || child.type;
+          return el.props.type || el.type;
         }
       }
 
@@ -79,24 +86,28 @@ export const ValidatedForm = (props) => {
         }
       }
 
-      const { name, onChange } = child.props;
+      const { name, onChange } = el.props;
       const {isvalid, dirty} = state[name] || {};
-      const type = getNormalizedType(child);
-      const value = getValue(type, child.props.value, name);
+      const type = getNormalizedType(el);
+      const value = getValue(type, el.props.value, name);
       const inputInvalid = isvalid !== undefined && !isvalid && dirty;
       const isSubmissionType = ['submit', 'image', 'reset'].includes(type);
-      const classes = child.props.className;
+      const classes = el.props.className;
 
       if (isSubmissionType) {
-        return child;
+        return el;
       }
       else {
-        return React.cloneElement(child, {
-          onBlur: child.props.onBlur,
-          onClick: child.props.onClick,
-          onFocus: child.props.onFocus,
-          onSelect: child.props.onSelect,
-          checked: (type === 'radio') && (value === vals[name]),
+        // Initial value was set with value prop
+        if (!dirty && type !== 'radio' && !vals[name] && value) {
+          setFormVal(name, value);
+        }
+
+        return React.cloneElement(el, {
+          onBlur: el.props.onBlur,
+          onClick: el.props.onClick,
+          onFocus: el.props.onFocus,
+          onSelect: el.props.onSelect,
           className: classnames(classes, { 'input-invalid': inputInvalid }),
           onChange: (e) => _onChange(e, onChange),
           value,
@@ -105,10 +116,10 @@ export const ValidatedForm = (props) => {
       }
     }
 
-    function handleFormGuard (child, key) {
-      const watches = (!Array.isArray(child.props.watches))
-                        ? [child.props.watches]
-                        : child.props.watches;
+    function handleFormGuard (el, key) {
+      const watches = (!Array.isArray(el.props.watches))
+                        ? [el.props.watches]
+                        : el.props.watches;
 
       const value = watches.map(name => vals[name] || '');
 
@@ -118,7 +129,7 @@ export const ValidatedForm = (props) => {
         }
       });
 
-      return React.cloneElement(child, {
+      return React.cloneElement(el, {
         state, key, mergeState, value
       });
     }
@@ -188,8 +199,8 @@ export const ValidatedForm = (props) => {
   }
 
   return (
-    <form {...props} onSubmit={_onSubmit}>
-      {useMemo(() => injectProps(children), [children, formVals])}
+    <form {...{ className, id, name }} onSubmit={_onSubmit}>
+      {injectProps(children)}
     </form>
   );
 }

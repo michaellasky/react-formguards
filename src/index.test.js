@@ -89,8 +89,8 @@ describe('ValidatedForm', () => {
           <label htmlFor='input1'>Test 1:</label>
           <input type='text' id='input1' name='input1' />
 
-          <label htmlFor='input1'>Test 2:</label>
-          <input type='text' id='input1' name='input1' />
+          <label htmlFor='input2'>Test 2:</label>
+          <input type='text' id='input2' name='input2' />
 
           <input type='submit' value='Submit' />
         </ValidatedForm>

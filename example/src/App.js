@@ -3,6 +3,7 @@ import ExampleBasic from './examples/example-basic';
 import ExampleFunction from './examples/example-function';
 import ExampleMultipleWatches from './examples/example-multiple-watches';
 import ExampleStyle from './examples/example-style';
+import ExampleValues from './examples/example-values';
 
 const App = () => {
     return (
@@ -182,6 +183,55 @@ const App = () => {
           </div>
         </div>
         
+        <div className='example'>
+          <div className='example-code'>
+            <h2>Passing Preset Values</h2>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-values.jsx'>Source</a>
+            <p>Just pass an object as the formVals prop to preset values in the form.</p>
+            <pre>
+            {`
+    const formVals = {
+      name: 'Emmett Brown',
+      email: 'doc@example.org',
+      comments: 'Great Scott!'
+    };
+
+    [...]
+
+    <ValidatedForm formVals={formVals} onSubmit={(e, formVals) => console.log(formVals)}>
+      <label htmlFor='example1-name'>Name:</label>
+      <input type='text' name='name' id='example1-name' />
+
+      <label htmlFor='example1-email'>Email:</label>
+      <FormGuard watches='email' validatesWith={validators.required} >
+          Email is required  
+      </FormGuard> 
+      <FormGuard watches='email' validatesWith={validators.email} >
+          Please enter a valid email address  
+      </FormGuard> 
+      <input type='email' name='email' id='example1-email' />  
+      
+      <label htmlFor='example1-phone'>Telephone:</label>
+      <FormGuard watches='phone' validatesWith={validators.phone} >
+          Please enter a valid phone number  
+      </FormGuard> 
+      <input type='tel' value='555 555 5555' name='phone' id='example1-phone' />  
+
+      <label htmlFor='example1-comments'>Comments:</label>
+      <FormGuard watches='comments' validatesWith={validators.maxLength(80)} >
+          Maximum length (80 characters) exceeded
+      </FormGuard> 
+      <textarea name='comments' id='example1-comments' />  
+      
+      <input type='submit' value='Check the console for onSubmit' />
+    </ValidatedForm>
+            `}            
+            </pre>
+          </div>
+          <div className='example-implementation'>
+            <ExampleValues />
+          </div>
+        </div>
       </section>
       </>
     );
