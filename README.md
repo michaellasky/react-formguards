@@ -1,6 +1,6 @@
 # react-formguards
 
-> Simple client side form validation
+> Simple, declarative client side form validation
 
 [![NPM](https://img.shields.io/npm/v/react-formguards.svg)](https://www.npmjs.com/package/react-formguards) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![SIZE](https://img.shields.io/bundlephobia/min/react-formguards.svg)](https://www.npmjs.com/package/react-formguards)
 
@@ -11,9 +11,12 @@ npm install --save react-formguards
 ```
 
 ## Usage
+
+Validation with react-formguards couldn't be simpler.  Just replace your &lt;form&gt; tag with &lt;ValidatedForm&gt;, passing an onSubmit callback.  Then add a &lt;FormGuard&gt; tags anwhere you'd like validation errors to appear.  The FormGuards handle everything else for you.
+
+
 Check out the [Live Examples!](https://nuclearhorsestudios.github.io/react-formguards/)
 
-Validation with react-formguards couldn't be simpler.  Just replace your <form> tag with <ValidatedForm>, passing an onSubmit callback.  Then add a <FormGuard> tags anwhere you'd like validation errors to appear.  The FormGuards handle everything else for you.
 ```jsx
 import React from 'react';
 import { ValidatedForm, FormGuard, validators } from 'react-formguards'
