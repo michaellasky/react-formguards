@@ -193,7 +193,8 @@ const App = () => {
     const formVals = {
       name: 'Emmett Brown',
       email: 'doc@example.org',
-      comments: 'Great Scott!'
+      phone: '555 555 5555',
+      comments: 'Great Scott!!'
     };
 
     [...]
@@ -215,7 +216,7 @@ const App = () => {
       <FormGuard watches='phone' validatesWith={validators.phone} >
           Please enter a valid phone number  
       </FormGuard> 
-      <input type='tel' value='555 555 5555' name='phone' id='example1-phone' />  
+      <input type='tel' name='phone' id='example1-phone' />  
 
       <label htmlFor='example1-comments'>Comments:</label>
       <FormGuard watches='comments' validatesWith={validators.maxLength(80)} >
