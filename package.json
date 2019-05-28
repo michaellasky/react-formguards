@@ -1,6 +1,6 @@
 {
   "name": "react-formguards",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Simple client side form validation",
   "author": "NuclearHorseStudios",
   "license": "MIT",
@@ -26,8 +26,8 @@
   },
   "peerDependencies": {
     "prop-types": "^15.5.4",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0"
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1"
   },
   "devDependencies": {
     "@svgr/rollup": "^2.4.1",

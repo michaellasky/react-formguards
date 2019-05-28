@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-indent */
 /* eslint-disable indent */
 /* eslint-disable padded-blocks */
-import ValidatedForm, { FormGuard } from './index';
+import { ValidatedForm, FormGuard } from './index';
 import { render, cleanup, fireEvent } from 'react-testing-library';
 import React from 'react';
 import { validators } from '.';
