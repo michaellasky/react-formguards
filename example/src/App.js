@@ -10,7 +10,8 @@ const App = () => {
       <section>
         <h1>react-formguards</h1>
         <h3>A simple, declarative approach to client side validation.</h3>
-
+        <span><a href='https://www.npmjs.com/package/react-formguards'>npm</a> | <a href='https://github.com/NuclearHorseStudios/react-formguards'>github</a></span>
+        
         <div className='example'>
           <div className='example-code'>
             <h2>Basic Validation</h2>
