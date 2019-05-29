@@ -1,12 +1,12 @@
 {
   "name": "react-formguards",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Simple client side form validation",
   "author": "NuclearHorseStudios",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NuclearHorseStudios/react-formguards.git"
+    "url": "git+https://github.com/michaellasky/react-formguards.git"
   },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
