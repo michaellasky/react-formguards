@@ -2,10 +2,10 @@
 /* eslint-disable react/jsx-indent */
 /* eslint-disable indent */
 /* eslint-disable padded-blocks */
-import { ValidatedForm, FormGuard } from './index';
-import { render, cleanup, fireEvent } from 'react-testing-library';
+import { ValidatedForm, FormGuard, validators } from './index';
+import { render, cleanup, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { validators } from '.';
 
 afterEach(cleanup);
 
@@ -280,8 +280,8 @@ describe('ValidatedForm', () => {
         <ValidatedForm onSubmit={onSubmit}>
           <label htmlFor='theInput'>Test:</label>
           <select multiple id='theInput' name='theInput'>
-            <option value='Some Text'>Some Text</option>
-            <option value='Some Different Text'>Some Different Text</option>
+            <option value={expectedValues[0]}>Some Text</option>
+            <option value={expectedValues[1]}>Some Different Text</option>
             <option value='Some Other Text'>Some Other Text</option>
           </select>
           <input type='submit' value='Submit' />
@@ -291,10 +291,9 @@ describe('ValidatedForm', () => {
       const select = getByLabelText('Test:', container);
       const submit = getByText('Submit', container);
   
-      Array.from(select.children, (option, i) => {
-        if (i === 0 || i === 1) { option.selected = true; }
-      });
+      userEvent.selectOptions(select, expectedValues);
   
+      // FIXME: Do we really need to call change here?
       fireEvent.change(select);
       fireEvent.click(submit);
   
@@ -469,10 +468,8 @@ describe('ValidatedForm', () => {
       fireEvent.click(submit);
       expect(getByText('Error Message', container)).toBeTruthy();
       
-      Array.from(select.children, (option, i) => {
-        if (i === 0 || i === 1) { option.selected = true; }
-      });
-  
+      userEvent.selectOptions(select, '1');
+      
       fireEvent.change(select);
       expect(queryByText('Error Message', container)).toBe(null);
     });
