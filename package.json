@@ -1,8 +1,8 @@
 {
   "name": "react-formguards",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Simple client side form validation",
-  "author": "NuclearHorseStudios",
+  "author": "Michael Lasky",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -65,9 +65,9 @@
   ],
   "dependencies": {},
   "bugs": {
-    "url": "https://github.com/NuclearHorseStudios/react-formguards/issues"
+    "url": "https://github.com/michaellasky/react-formguards/issues"
   },
-  "homepage": "https://github.com/NuclearHorseStudios/react-formguards#readme",
+  "homepage": "https://github.com/michaellasky/react-formguards#readme",
   "directories": {
     "example": "example"
   },
