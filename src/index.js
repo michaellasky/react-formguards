@@ -14,7 +14,9 @@ const defaultValues = {
   'file-multiple': []
 }
 
-export const ValidatedForm = (props) => {
+const asArray = val => Array.isArray(val) ? val : [val];
+
+export const ValidatedForm = (props) =>  {
   const {
     children,
     className,
@@ -117,10 +119,7 @@ export const ValidatedForm = (props) => {
     }
 
     function handleFormGuard (el, key) {
-      const watches = (!Array.isArray(el.props.watches))
-                        ? [el.props.watches]
-                        : el.props.watches;
-
+      const watches = asArray(el.props.watches);
       const value = watches.map(name => vals[name] || '');
 
       watches.forEach(name => {
@@ -162,39 +161,36 @@ export const ValidatedForm = (props) => {
   }
 
   function mergeState (name, st) {
-    setState({...state, [`${name}`]: {...state[name], ...st}});
+    setState({ ...state, [name]: { ...state[name], ...st } });
   }
 
   function setFormVal (name, val) {
     if (val === undefined) {
-      // delete vals[name]; this might be cleaner, even w/ mutation
-      const newVals = Object.entries(vals).reduce((acc, [key, val]) =>
-        (key === name) ? acc : { ...acc, [`${key}`]: val
-      });
-      setFormVals(newVals);
+      delete vals[name];
+      setFormVals(vals);
     }
     else {
-      setFormVals({ ...vals, [`${name}`]: val });
+      setFormVals({ ...vals, [name]: val });
     }
   }
 
   function formIsValid () {
-    const entries = Object.values(state);
+    const states = Object.values(state);
 
-    return entries.length === 0 || !(entries.reduce((invalid, cState) =>
+    return states.length === 0 || !(states.reduce((invalid, cState) =>
       invalid || (cState.validated && !cState.isvalid), false
     ));
   }
 
   function setFormDirty () {
     setState(Object.entries(state).reduce((dirty, [name, cState]) =>
-      ({...dirty, [`${name}`]: { ...cState, dirty: true }}), {}
+      ({ ...dirty, [name]: { ...cState, dirty: true } }), {}
     ));
   }
 
   function invalidateForm () {
     setState(Object.entries(state).reduce((invalid, [name, st]) =>
-      ({ ...invalid, [`${name}`]: { ...st, isvalid: undefined } }), {}
+      ({ ...invalid, [name]: { ...st, isvalid: undefined } }), {}
     ));
   }
 
@@ -216,12 +212,12 @@ export const FormGuard = ({
   const isvalid = !!validatesWith.apply(null, value);
   let isDirty = false;
 
-  if (!Array.isArray(watches)) { watches = [watches]; }
+  watches = asArray(watches);
 
   watches.forEach(watch => {
     const st = state[watch];
     const markValid = isvalid && st && st.isvalid === undefined;
-    const invalidate = !isvalid &&  st && st.isvalid !== false;
+    const invalidate = !isvalid && st && st.isvalid !== false;
 
     if (invalidate || markValid) { mergeState(watch, { isvalid }); }
     isDirty = isDirty || (st && st.dirty);
