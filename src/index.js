@@ -5,7 +5,6 @@
 /* eslint-disable brace-style */
 /* eslint-disable no-control-regex */
 import React, { useState, useEffect } from 'react';
-import classnames from 'classnames';
 
 const formTypes = ['input', 'select', 'textarea'];
 const defaultValues = {
@@ -16,15 +15,14 @@ const defaultValues = {
 
 const asArray = val => Array.isArray(val) ? val : [val];
 
-export const ValidatedForm = (props) =>  {
-  const {
-    children,
-    className,
-    id,
-    name,
-    onSubmit,
-    formVals = {}
-  } = props;
+export const ValidatedForm = ({
+  children,
+  className,
+  id,
+  name,
+  onSubmit,
+  formVals = {}
+}) =>  {
 
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
@@ -61,15 +59,12 @@ export const ValidatedForm = (props) =>  {
     function handleFormElement (el, key) {
 
       function getNormalizedType (el) {
-        if (el.type === 'select' && el.props.multiple) {
-          return 'select-multiple';
-        }
-        else if (el.props.type === 'file' && el.props.multiple) {
-          return 'file-multiple';
-        }
-        else {
-          return el.props.type || el.type;
-        }
+        const multiple = el.props.multiple;
+        const [select, file] = [el.type === 'select', el.type === 'file'];
+
+        if      (select && multiple) { return 'select-multiple';        }
+        else if (file && multiple)   { return 'file-multiple';          }
+        else                         { return el.props.type || el.type; }
       }
 
       function getDefaultValue (type) {
@@ -77,19 +72,15 @@ export const ValidatedForm = (props) =>  {
       }
 
       function getValue (type, propsVal, name) {
-        switch (type) {
-          case 'radio':
-            return propsVal;
-          case 'file-multiple':
-          case 'file':
-            return undefined;
-          default:
-            return vals[name] || propsVal || getDefaultValue(type);
+        if      (type === 'radio')             { return propsVal; }
+        else if (type.substr(0, 4) === 'file') { return undefined; }
+        else {
+          return vals[name] || propsVal || getDefaultValue(type);
         }
       }
 
       const { name, onChange } = el.props;
-      const {isvalid, dirty} = state[name] || {};
+      const { isvalid, dirty } = state[name] || {};
       const type = getNormalizedType(el);
       const value = getValue(type, el.props.value, name);
       const inputInvalid = isvalid !== undefined && !isvalid && dirty;
@@ -110,7 +101,7 @@ export const ValidatedForm = (props) =>  {
           onClick: el.props.onClick,
           onFocus: el.props.onFocus,
           onSelect: el.props.onSelect,
-          className: classnames(classes, { 'input-invalid': inputInvalid }),
+          className: inputInvalid ? `${classes} input-invalid` : classes,
           onChange: (e) => _onChange(e, onChange),
           value,
           key
@@ -128,9 +119,7 @@ export const ValidatedForm = (props) =>  {
         }
       });
 
-      return React.cloneElement(el, {
-        state, key, mergeState, value
-      });
+      return React.cloneElement(el, { state, key, mergeState, value });
     }
   }
 
@@ -145,7 +134,7 @@ export const ValidatedForm = (props) =>  {
     }
     else if (type === 'select' || type === 'select-multiple') {
       value = Array.from(options).reduce((selected, option) =>
-        option.selected ? [...selected, option.value] : selected,
+        option.selected ? [ ...selected, option.value ] : selected,
       []);
     }
     else if (type === 'file') {
@@ -209,11 +198,11 @@ export const FormGuard = ({
   validatesWith,
   value
 }) => {
+
   const isvalid = !!validatesWith.apply(null, value);
   let isDirty = false;
 
   watches = asArray(watches);
-
   watches.forEach(watch => {
     const st = state[watch];
     const markValid = isvalid && st && st.isvalid === undefined;

@@ -63,9 +63,7 @@
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "classnames": "^2.2.6"
-  },
+  "dependencies": {},
   "bugs": {
     "url": "https://github.com/NuclearHorseStudios/react-formguards/issues"
   },
