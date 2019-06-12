@@ -41,9 +41,9 @@ export const ValidatedForm = ({
     setFormVals({});
   }
 
-  function injectProps (nodes = []) {
+  function injectProps (childNodes = []) {
 
-    return React.Children.map(nodes, (el, key) => {
+    return React.Children.map(childNodes, (el, key) => {
       if (!el || !el.props) { return el; }
 
       const { props, type } = el;
