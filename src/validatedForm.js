@@ -112,12 +112,7 @@ const ValidatedForm = ({
 
   function _onSubmit (e) {
     e.preventDefault();
-
-    if (!formIsValid()) {
-      setFormDirty();
-    } else {
-      onSubmit(e, vals, resetForm);
-    }
+    formIsValid() ? onSubmit(e, vals, resetForm) : setFormDirty();
   }
 
   function _onChange (e, onChange = () => {}) {
