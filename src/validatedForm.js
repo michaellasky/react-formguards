@@ -104,7 +104,7 @@ const ValidatedForm = ({
       value = checked;
     } else if (type === 'select' || type === 'select-multiple') {
       value = Array.from(options).filter(o => o.selected).map(o => o.value);
-    } else if (type === 'file') {
+    } else if (type === 'file' || type === 'file-multiple') {
       value = files;
     }
 
