@@ -4,6 +4,14 @@
 
 [![NPM](https://img.shields.io/npm/v/react-formguards.svg)](https://www.npmjs.com/package/react-formguards) [![SIZE](https://img.shields.io/bundlephobia/min/react-formguards.svg)](https://www.npmjs.com/package/react-formguards)
 
+## The Problem
+
+Client side form validation is a pain in the butt.  Most current solutions are large and complex.  Basic form validation should be simple.
+
+## The Solution
+
+react-formguards is easy to use, but powerful.  Complex validation rules can be declaratively defined with simple &lt;FormGuard&gt; tags.  Just add FormGuards to your form markup and you're done!     
+
 ## Install
 
 ```bash
