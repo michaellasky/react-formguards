@@ -153,8 +153,7 @@ const ValidatedForm = ({
 
   function setFormVal (name, val) {
     if (val === undefined) {
-      delete vals[name];
-      setFormVals(vals);
+      setFormVals(vals.filter(val => val.name !== name));
     } else {
       setFormVals({ ...vals, [name]: val });
     }
