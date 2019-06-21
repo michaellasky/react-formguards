@@ -1,6 +1,6 @@
 # react-formguards
 
-> Simple, declarative client side form validation
+> Simple, declarative, client side form validation
 
 [![NPM](https://img.shields.io/npm/v/react-formguards.svg)](https://www.npmjs.com/package/react-formguards) [![SIZE](https://img.shields.io/bundlephobia/min/react-formguards.svg)](https://www.npmjs.com/package/react-formguards)
 
