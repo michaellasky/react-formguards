@@ -39,6 +39,9 @@ const ValidatedForm = ({
     setFormVals({});
   }
 
+  // This function walks through the children recursively and
+  // replaces form elements with managed versions, and also passes
+  // current form element values to relevant FormGuards form validation
   function injectProps (childNodes = []) {
     return React.Children.map(childNodes, (el, key) => {
       if (!el || !el.props) { return el; }
@@ -81,7 +84,7 @@ const ValidatedForm = ({
         if (type === 'radio') {
           return propsVal;
         } else if (type.substr(0, 4) === 'file') {
-          return undefined;
+          return undefined; // We cant programtically set file value
         } else {
           return vals[name] || propsVal || getDefaultValue(type);
         }
