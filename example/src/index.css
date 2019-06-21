@@ -50,6 +50,15 @@ input[type="radio"] {
   display: inline-block;
 }
 
+
+input[type="checkbox"] {
+  width: 1em;
+  height: 1em;
+  margin: 1em;
+  display: inline-block;
+}
+
+
 .input-invalid {
   outline: 1px solid #ff0000;
 }

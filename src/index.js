@@ -51,9 +51,18 @@ export const ValidatedForm = ({
       const isFormElement = formTypes.includes(type);
       const isGuard = type === FormGuard;
 
-      if      (isFormElement) { return handleFormElement(el, key);        }
-      else if (isGuard)       { return handleFormGuard(el, key);          }
-      else                    { return React.cloneElement(el, {}, children); }
+      if (isFormElement) {
+        return handleFormElement(el, key);
+      }
+      else if (isGuard) {
+        return handleFormGuard(el, key);
+      }
+      else if (children.length > 0) {
+        return React.cloneElement(el, {}, children);
+      }
+      else {
+        return el;
+      }
     });
 
     function handleFormElement (el, key) {
@@ -120,13 +129,12 @@ export const ValidatedForm = ({
   }
 
   function _onChange (e, onChange = () => {}) {
-    let { target: { name, value, options, files, checked, type } } = e;
+    let { target: { name, value, options, files, type } } = e;
 
     if (type === 'checkbox') {
       // A checkbox will pass the *current* state on change as string on click
       if      (value === 'true')  { value = false;    }
       else if (value === 'false') { value = true;     }
-      else if (!checked)          { value = undefined }
     }
     else if (type === 'select' || type === 'select-multiple') {
       value = Array.from(options).reduce((selected, option) =>
