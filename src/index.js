@@ -91,10 +91,6 @@ export const ValidatedForm = ({
         return el;
       }
       else {
-        // Initial value was set with value prop
-        if (!dirty && type !== 'radio' && !vals[name] && value) {
-          setFormVal(name, value);
-        }
 
         return React.cloneElement(el, {
           onBlur: el.props.onBlur,
