@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "508ea50f828d0550950846b106a830e8",
+    "revision": "a53adcdce6610c635e26240c9442c714",
     "url": "/react-formguards/index.html"
   },
   {
-    "revision": "cb12e6ba411d03127ef7",
+    "revision": "b20bc2f33534676544ad",
     "url": "/react-formguards/static/css/main.ccd5b6ae.chunk.css"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/react-formguards/static/js/2.cc16dd21.chunk.js"
   },
   {
-    "revision": "cb12e6ba411d03127ef7",
-    "url": "/react-formguards/static/js/main.c5ed0f62.chunk.js"
+    "revision": "b20bc2f33534676544ad",
+    "url": "/react-formguards/static/js/main.d01bbbf9.chunk.js"
   },
   {
     "revision": "8da6708cffabbb9c9043",
