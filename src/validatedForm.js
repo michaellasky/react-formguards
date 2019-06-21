@@ -27,22 +27,18 @@ const ValidatedForm = ({
   // current form element values to relevant FormGuards for validation
   function injectProps (childNodes = []) {
     return React.Children.map(childNodes, (el, key) => {
-      if (!el || !el.props) { return el; }
-
       const { props, type } = el;
-      const children = props.children ? injectProps(props.children) : [];
+      const kids = props && props.children ? injectProps(props.children) : [];
       const isFormElement = ['input', 'select', 'textarea'].includes(type);
       const isGuard = type === FormGuard;
 
-      if (isFormElement) {
-        return handleFormElement(el, key);
-      } else if (isGuard) {
-        return handleFormGuard(el, key);
-      } else if (children.length > 0) {
-        return React.cloneElement(el, {}, children);
-      } else {
-        return el;
-      }
+      return isFormElement
+        ? handleFormElement(el, key)
+        : isGuard
+          ? handleFormGuard(el, key)
+          : kids.length > 0
+            ? React.cloneElement(el, {}, kids)
+            : el;
     });
 
     function handleFormElement (el, key) {
@@ -50,44 +46,35 @@ const ValidatedForm = ({
         const multiple = el.props.multiple;
         const [select, file] = [el.type === 'select', el.type === 'file'];
 
-        if (select && multiple) {
-          return 'select-multiple';
-        } else if (file && multiple) {
-          return 'file-multiple';
-        } else {
-          return el.props.type || el.type;
-        }
+        return (select && multiple)
+          ? 'select-multiple'
+          : (file && multiple)
+            ? 'file-multiple'
+            : el.props.type || el.type;
       }
 
-      function getDefaultValue (type) {
-        return defaultValues[type] === undefined ? '' : defaultValues[type];
+      function determineValue (el, name, type) {
+        return (type === 'radio')
+          ? el.props.value
+          : (type.substr(0, 4) === 'file')
+            ? undefined // We cant programtically set file value
+            : vals[name] || el.props.value || defaultValues[type] || '';
       }
 
-      function getValue (type, propsVal, name) {
-        if (type === 'radio') {
-          return propsVal;
-        } else if (type.substr(0, 4) === 'file') {
-          return undefined; // We cant programtically set file value
-        } else {
-          return vals[name] || propsVal || getDefaultValue(type);
-        }
-      }
-
-      const { name, onChange } = el.props;
+      const name = el.props.name;
       const invalid = state[name] && state[name].isvalid === false;
       const type = getNormalizedType(el);
-      const value = getValue(type, el.props.value, name);
-      const inputInvalid = invalid && isDirty(name);
-      const classes = el.props.className;
-      const className = inputInvalid ? `${classes} input-invalid` : classes;
+      const className = (invalid && isDirty(name))
+        ? `${el.props.className} input-invalid`
+        : el.props.className;
 
       return ['submit', 'image', 'reset'].includes(type)
         ? el
         : React.cloneElement(el, {
           key,
           className,
-          value,
-          onChange: (e) => _onChange(e, onChange)
+          value: determineValue(el, name, type),
+          onChange: (e) => _onChange(e, el.props.onChange)
         });
     }
 
