@@ -95,13 +95,11 @@ const ValidatedForm = ({
       const type = getNormalizedType(el);
       const value = getValue(type, el.props.value, name);
       const inputInvalid = isvalid !== undefined && !isvalid && dirty;
-      const isSubmissionType = ['submit', 'image', 'reset'].includes(type);
       const classes = el.props.className;
 
-      if (isSubmissionType) {
-        return el;
-      } else {
-        return React.cloneElement(el, {
+      return ['submit', 'image', 'reset'].includes(type)
+        ? el
+        : React.cloneElement(el, {
           onBlur: el.props.onBlur,
           onClick: el.props.onClick,
           onFocus: el.props.onFocus,
@@ -111,7 +109,6 @@ const ValidatedForm = ({
           value,
           key
         });
-      }
     }
 
     function handleFormGuard (el, key) {
