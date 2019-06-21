@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import ExampleBasic from './examples/example-basic';
 import ExampleFunction from './examples/example-function';
 import ExampleMultipleWatches from './examples/example-multiple-watches';
@@ -6,13 +6,13 @@ import ExampleStyle from './examples/example-style';
 import ExampleValues from './examples/example-values';
 
 const App = () => {
-    return (
-      <>
+  return (
+    <>
       <section>
         <h1>react-formguards</h1>
         <h3>A simple, declarative approach to client side validation.</h3>
         <span><a href='https://www.npmjs.com/package/react-formguards'>npm</a> | <a href='https://github.com/NuclearHorseStudios/react-formguards'>github</a></span>
-        
+
         <div className='example'>
           <div className='example-code'>
             <h2>Basic Validation</h2>
@@ -22,14 +22,14 @@ const App = () => {
                 Just write your form like normal, replacing your &lt;form&gt; tag with a &lt;ValidatedForm&gt; tag.  Pass it an onSubmit function.
               </li>
               <li>
-                Then add &lt;FormGuard&gt; tags anywhere you'd like a validation error to show up. <br /> Each &lt;FormGuard&gt; tag:  
-                  <ul>
-                    <li>Watches specified input(s) and validates as needed</li>
-                    <li>Becomes a &lt;span&gt; in the DOM when the error shows</li>                  
-                    <li>onSubmit won't be called until all the FormGuard's are satisfied</li>
-                  </ul>
+                Then add &lt;FormGuard&gt; tags anywhere you'd like a validation error to show up. <br /> Each &lt;FormGuard&gt; tag:
+                <ul>
+                  <li>Watches specified input(s) and validates as needed</li>
+                  <li>Becomes a &lt;span&gt; in the DOM when the error shows</li>
+                  <li>onSubmit won't be called until all the FormGuard's are satisfied</li>
+                </ul>
 
-                  <p>Some basic validators are included -- required, email, phone, maxLength, and minLength</p>
+                <p>Some basic validators are included -- required, email, phone, maxLength, and minLength</p>
               </li>
             </ol>
             <pre>{`
@@ -70,7 +70,7 @@ const App = () => {
       
       <input type='submit' value='Check the console for onSubmit' />
     </ValidatedForm>
-          `}            
+          `}
             </pre>
           </div>
           <div className='example-implementation'>
@@ -84,7 +84,7 @@ const App = () => {
             <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-function.jsx'>Source</a>
             <p>Just pass a function to validatesWith to use your own validation functions.</p>
             <pre>
-            {`
+              {`
     <ValidatedForm onSubmit={(e, formVals) => console.log(formVals)}>
 
       <label htmlFor='example2-fzappa'>Must be Frank Zappa:</label>
@@ -95,7 +95,7 @@ const App = () => {
       
       <input type='submit' value='Check the console for onSubmit' />
     </ValidatedForm>
-            `}            
+            `}
             </pre>
           </div>
           <div className='example-implementation'>
@@ -110,7 +110,7 @@ const App = () => {
             <p>A FormGuard can watch multiple elements by passing an array to the <i>watches</i> prop</p>
             <p>In this example the <i>validateTwoInputs</i> function requires that either <i>input1</i> OR <i>input2</i> is filled in.</p>
             <pre>
-            {`
+              {`
     function validateTwoInputs (input1, input2) {
       return (input1 && input1.length > 0) || 
              (input2 && input2.length > 0);
@@ -135,7 +135,7 @@ const App = () => {
 
       <input type='submit' value='Check the console for onSubmit' />
     </ValidatedForm>
-            `}            
+            `}
             </pre>
           </div>
           <div className='example-implementation'>
@@ -150,7 +150,7 @@ const App = () => {
             <p>react-formguards will add the css class 'input-invalid' to form controls that are invalid.</p>
             <p>The span that displays a FormGuard error text will have the css class 'validation-error'</p>
             <pre>
-            {`
+              {`
     
     .input-invalid {
       outline: 3px solid #0000ff;
@@ -175,21 +175,21 @@ const App = () => {
       
       <input type='submit' value='Check the console for onSubmit' />
     </ValidatedForm>
-            `}            
+            `}
             </pre>
           </div>
           <div className='example-implementation'>
             <ExampleStyle />
           </div>
         </div>
-        
+
         <div className='example'>
           <div className='example-code'>
             <h2>Passing Preset Values</h2>
             <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-values.jsx'>Source</a>
             <p>Just pass an object as the formVals prop to preset values in the form.</p>
             <pre>
-            {`
+              {`
     const formVals = {
       name: 'Emmett Brown',
       email: 'doc@example.org',
@@ -226,7 +226,7 @@ const App = () => {
       
       <input type='submit' value='Check the console for onSubmit' />
     </ValidatedForm>
-            `}            
+            `}
             </pre>
           </div>
           <div className='example-implementation'>
@@ -234,8 +234,8 @@ const App = () => {
           </div>
         </div>
       </section>
-      </>
-    );
+    </>
+  );
 }
 
 export default App;
