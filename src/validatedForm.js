@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import {asArray} from './helper-utils';
 import FormGuard from './formGuard';
 
-const formTypes = ['input', 'select', 'textarea'];
 const defaultValues = {
   'checkbox': false,
   'select-multiple': [],
@@ -32,7 +31,7 @@ const ValidatedForm = ({
 
       const { props, type } = el;
       const children = props.children ? injectProps(props.children) : [];
-      const isFormElement = formTypes.includes(type);
+      const isFormElement = ['input', 'select', 'textarea'].includes(type);
       const isGuard = type === FormGuard;
 
       if (isFormElement) {
@@ -74,7 +73,7 @@ const ValidatedForm = ({
         }
       }
 
-      const { name, onBlur, onClick, onFocus, onSelect, onChange } = el.props;
+      const { name, onChange } = el.props;
       const invalid = state[name] && state[name].isvalid === false;
       const type = getNormalizedType(el);
       const value = getValue(type, el.props.value, name);
@@ -88,10 +87,6 @@ const ValidatedForm = ({
           key,
           className,
           value,
-          onBlur,
-          onClick,
-          onFocus,
-          onSelect,
           onChange: (e) => _onChange(e, onChange)
         });
     }
