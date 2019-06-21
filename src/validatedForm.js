@@ -41,7 +41,7 @@ const ValidatedForm = ({
 
   // This function walks through the children recursively and
   // replaces form elements with managed versions, and also passes
-  // current form element values to relevant FormGuards form validation
+  // current form element values to relevant FormGuards for validation
   function injectProps (childNodes = []) {
     return React.Children.map(childNodes, (el, key) => {
       if (!el || !el.props) { return el; }
