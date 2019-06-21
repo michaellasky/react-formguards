@@ -23,21 +23,6 @@ const ValidatedForm = ({
 
   useEffect(() => { invalidateForm(); }, [vals]);
 
-  function _onSubmit (e) {
-    e.preventDefault();
-
-    if (!formIsValid()) {
-      setFormDirty();
-    } else {
-      onSubmit(e, vals, resetForm);
-    }
-  }
-
-  function resetForm () {
-    setState({});
-    setFormVals({});
-  }
-
   // This function walks through the children recursively and
   // replaces form elements with managed versions, and also passes
   // current form element values to relevant FormGuards for validation
@@ -125,6 +110,16 @@ const ValidatedForm = ({
     }
   }
 
+  function _onSubmit (e) {
+    e.preventDefault();
+
+    if (!formIsValid()) {
+      setFormDirty();
+    } else {
+      onSubmit(e, vals, resetForm);
+    }
+  }
+
   function _onChange (e, onChange = () => {}) {
     let { target: { name, value, options, files, type } } = e;
 
@@ -145,6 +140,11 @@ const ValidatedForm = ({
     onChange(e);
   }
 
+  function resetForm () {
+    setState({});
+    setFormVals({});
+  }
+
   function mergeState (name, st) {
     setState({ ...state, [name]: { ...state[name], ...st } });
   }
@@ -162,7 +162,7 @@ const ValidatedForm = ({
       {}
     ));
   }
-  
+
   function isDirty (name) {
     return state[name] && state[name].dirty;
   }
