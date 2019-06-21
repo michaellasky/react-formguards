@@ -1,4 +1,3 @@
-/* eslint-disable no-multi-spaces */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import {asArray} from './helper-utils';
@@ -90,24 +89,25 @@ const ValidatedForm = ({
         }
       }
 
-      const { name, onChange } = el.props;
-      const { isvalid, dirty } = state[name] || {};
+      const { name, onBlur, onClick, onFocus, onSelect, onChange } = el.props;
+      const invalid = state[name] && state[name].isvalid !== true;
       const type = getNormalizedType(el);
       const value = getValue(type, el.props.value, name);
-      const inputInvalid = isvalid !== undefined && !isvalid && dirty;
+      const inputInvalid = invalid && isDirty(name);
       const classes = el.props.className;
+      const className = inputInvalid ? `${classes} input-invalid` : classes;
 
       return ['submit', 'image', 'reset'].includes(type)
         ? el
         : React.cloneElement(el, {
-          onBlur: el.props.onBlur,
-          onClick: el.props.onClick,
-          onFocus: el.props.onFocus,
-          onSelect: el.props.onSelect,
-          className: inputInvalid ? `${classes} input-invalid` : classes,
-          onChange: (e) => _onChange(e, onChange),
+          key,
+          className,
           value,
-          key
+          onBlur,
+          onClick,
+          onFocus,
+          onSelect,
+          onChange: (e) => _onChange(e, onChange)
         });
     }
 
@@ -132,16 +132,14 @@ const ValidatedForm = ({
       // A checkbox will pass the *current* state on change as string on click
       value = value !== 'true';
     } else if (type === 'select' || type === 'select-multiple') {
-      value = Array.from(options).reduce((selected, option) =>
-        option.selected ? [ ...selected, option.value ] : selected,
-      []);
+      value = Array.from(options).filter(o => o.selected).map(o => o.value);
     } else if (type === 'file') {
       value = files;
     }
 
-    if (state[name] && state[name].dirty !== true) {
-      mergeState(name, { dirty: true }); // Set dirty if not already
-    };
+    if (!isDirty(name)) {
+      mergeState(name, { dirty: true });
+    }
 
     setFormVal(name, value);
     onChange(e);
@@ -152,31 +150,36 @@ const ValidatedForm = ({
   }
 
   function setFormVal (name, val) {
-    if (val === undefined) {
-      setFormVals(vals.filter(val => val.name !== name));
-    } else {
-      setFormVals({ ...vals, [name]: val });
-    }
+    val === undefined
+      ? setFormVals(vals.filter(val => val.name !== name))
+      : setFormVals({ ...vals, [name]: val });
+  }
+
+  function setStateValueForAllElements (key, val) {
+    setState(Object.entries(state).reduce(
+      (acc, [name, controlState]) =>
+        ({ ...acc, [name]: { ...controlState, [key]: val } }),
+      {}
+    ));
+  }
+  
+  function isDirty (name) {
+    return state[name] && state[name].dirty;
   }
 
   function formIsValid () {
     const states = Object.values(state);
+    const invalidElements = states.filter(s => s.validated && !s.isvalid);
 
-    return states.length === 0 || !(states.reduce((invalid, cState) =>
-      invalid || (cState.validated && !cState.isvalid), false
-    ));
+    return invalidElements.length === 0;
   }
 
   function setFormDirty () {
-    setState(Object.entries(state).reduce((dirty, [name, cState]) =>
-      ({ ...dirty, [name]: { ...cState, dirty: true } }), {}
-    ));
+    setStateValueForAllElements('dirty', true);
   }
 
   function invalidateForm () {
-    setState(Object.entries(state).reduce((invalid, [name, st]) =>
-      ({ ...invalid, [name]: { ...st, isvalid: undefined } }), {}
-    ));
+    setStateValueForAllElements('isvalid', undefined);
   }
 
   return (
