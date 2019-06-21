@@ -75,7 +75,7 @@ const ValidatedForm = ({
       }
 
       const { name, onBlur, onClick, onFocus, onSelect, onChange } = el.props;
-      const invalid = state[name] && state[name].isvalid !== true;
+      const invalid = state[name] && state[name].isvalid === false;
       const type = getNormalizedType(el);
       const value = getValue(type, el.props.value, name);
       const inputInvalid = invalid && isDirty(name);
@@ -116,11 +116,10 @@ const ValidatedForm = ({
   }
 
   function _onChange (e, onChange = () => {}) {
-    let { target: { name, value, options, files, type } } = e;
+    let { target: { name, value, checked, options, files, type } } = e;
 
     if (type === 'checkbox') {
-      // A checkbox will pass the *current* state on change as string on click
-      value = value !== 'true';
+      value = checked;
     } else if (type === 'select' || type === 'select-multiple') {
       value = Array.from(options).filter(o => o.selected).map(o => o.value);
     } else if (type === 'file') {
