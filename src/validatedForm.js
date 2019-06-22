@@ -20,7 +20,7 @@ const ValidatedForm = ({
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
 
-  useEffect(() => { invalidateForm(); }, [vals]);
+  useEffect(invalidateForm, [vals]);
 
   // This function walks through the children recursively and
   // replaces form elements with managed versions, and also passes
