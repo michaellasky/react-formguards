@@ -1,5 +1,7 @@
+/* eslint-disable brace-style */
+/* eslint-disable no-multi-spaces */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
+import React, { cloneElement, useState, useEffect } from 'react';
 import {asArray} from './helper-utils';
 import FormGuard from './formGuard';
 
@@ -27,18 +29,16 @@ const ValidatedForm = ({
   // current form element values to relevant FormGuards for validation
   function injectProps (childNodes = []) {
     return React.Children.map(childNodes, (el, key) => {
-      const { props, type } = el;
-      const kids = props && props.children ? injectProps(props.children) : [];
+      if (!el || !el.props) { return el; }
+      const { props: { children }, type } = el;
+      const injected = injectProps(children);
       const isFormElement = ['input', 'select', 'textarea'].includes(type);
       const isGuard = type === FormGuard;
 
-      return isFormElement
-        ? handleFormElement(el, key)
-        : isGuard
-          ? handleFormGuard(el, key)
-          : kids.length > 0
-            ? React.cloneElement(el, {}, kids)
-            : el;
+      if      (isFormElement)       { return handleFormElement(el, key);     }
+      else if (isGuard)             { return handleFormGuard(el, key);       }
+      else if (injected.length > 0) { return cloneElement(el, {}, injected); }
+      else                          { return el; }
     });
 
     function handleFormElement (el, key) {
@@ -46,19 +46,17 @@ const ValidatedForm = ({
         const multiple = el.props.multiple;
         const [select, file] = [el.type === 'select', el.type === 'file'];
 
-        return (select && multiple)
-          ? 'select-multiple'
-          : (file && multiple)
-            ? 'file-multiple'
-            : el.props.type || el.type;
+        if      (select && multiple) { return 'select-multiple';        }
+        else if (file && multiple)   { return 'file-multiple';          }
+        else                         { return el.props.type || el.type; }
       }
 
       function determineValue (el, name, type) {
-        return (type === 'radio')
-          ? el.props.value
-          : (type.substr(0, 4) === 'file')
-            ? undefined // We cant programtically set file value
-            : vals[name] || el.props.value || defaultValues[type] || '';
+        const value = vals[name] || el.props.value || defaultValues[type] || '';
+
+        if      (type === 'radio')             { return el.props.value; }
+        else if (type.substr(0, 4) === 'file') { return undefined;      }
+        else                                   { return value;          }
       }
 
       const name = el.props.name;
