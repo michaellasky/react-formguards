@@ -1,3 +1,4 @@
+/* eslint-disable no-multi-spaces */
 import { asArray } from './helper-utils';
 import React from 'react';
 
@@ -19,6 +20,8 @@ const FormGuard = ({
     const invalidate = !isvalid && st && st.isvalid !== false;
 
     if (invalidate || markValid) { mergeState(watch, { isvalid }); }
+    if (st.updating)             { mergeState(watch, { updating: false }); }
+
     isDirty = isDirty || (st && st.dirty);
   });
 
