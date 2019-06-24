@@ -19,14 +19,13 @@ const ValidatedForm = ({
   onSubmit,
   formVals = {}
 }) => {
-
   // State consists of:
   // dirty: has the control been changed?
+  // validated: Set by formguard to true if the input is being watched
+  // isvalid: true when all the conditions of all watching formguards are met
   // updating: is true when the input changes, becomes false once a formguard
   //  handles the control.  Stops the 'input-invalid' class from being
   //  temporarily applied while state is settling
-  // validated: Set by formguard to true if the input is being watched
-  // isvalid: true when all the conditions of any watching formguards are met
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
 
@@ -145,6 +144,14 @@ const ValidatedForm = ({
     ));
   }
 
+  function setFormDirty () {
+    setStateValueForAllElements('dirty', true);
+  }
+
+  function invalidateForm () {
+    setStateValueForAllElements('isvalid', undefined);
+  }
+
   function isDirty (name) {
     return state[name] && state[name].dirty;
   }
@@ -154,14 +161,6 @@ const ValidatedForm = ({
     const invalidElements = states.filter(s => s.validated && !s.isvalid);
 
     return invalidElements.length === 0;
-  }
-
-  function setFormDirty () {
-    setStateValueForAllElements('dirty', true);
-  }
-
-  function invalidateForm () {
-    setStateValueForAllElements('isvalid', undefined);
   }
 
   return (
