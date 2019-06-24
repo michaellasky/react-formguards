@@ -29,7 +29,13 @@ const ValidatedForm = ({
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
 
-  useEffect(() => { invalidateForm(); }, [vals]);
+  useEffect(invalidateForm, [vals]);
+
+  return (
+    <form {...{ className, id, name }} onSubmit={_onSubmit}>
+      {injectProps(children)}
+    </form>
+  );
 
   // This function walks through the children recursively and
   // replaces form elements with managed versions, and also passes
@@ -162,12 +168,6 @@ const ValidatedForm = ({
 
     return invalidElements.length === 0;
   }
-
-  return (
-    <form {...{ className, id, name }} onSubmit={_onSubmit}>
-      {injectProps(children)}
-    </form>
-  );
 }
 
 export default ValidatedForm;
