@@ -1,7 +1,7 @@
 /* eslint-disable brace-style */
 /* eslint-disable no-multi-spaces */
 /* eslint-disable react/prop-types */
-import React, { cloneElement, useState, useEffect } from 'react';
+import React, { cloneElement, useState, useRef, useEffect } from 'react';
 import {asArray} from './helper-utils';
 import FormGuard from './formGuard';
 
@@ -28,11 +28,12 @@ const ValidatedForm = ({
   //  temporarily applied while state is settling
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
+  const ref = useRef(null);
 
   useEffect(invalidateForm, [vals]);
 
   return (
-    <form {...{ className, id, name }} onSubmit={_onSubmit}>
+    <form {...{ className, id, name, ref }} onSubmit={_onSubmit}>
       {injectProps(children)}
     </form>
   );
@@ -73,20 +74,17 @@ const ValidatedForm = ({
       }
 
       const name = el.props.name;
-      const invalid = state[name] && state[name].isvalid === false;
       const type = getNormalizedType(el);
+      const value = determineValue(el, name, type);
+      const onChange = (e) => _onChange(e, el.props.onChange);
+      const invalid = state[name] && state[name].isvalid === false;
       const className = (invalid && isDirty(name) && !state[name].updating)
         ? `${el.props.className} input-invalid`
         : el.props.className;
 
       return ['submit', 'image', 'reset'].includes(type)
         ? el
-        : cloneElement(el, {
-          key,
-          className,
-          value: determineValue(el, name, type),
-          onChange: (e) => _onChange(e, el.props.onChange)
-        });
+        : cloneElement(el, { key, className, value, onChange });
     }
 
     function handleFormGuard (el, key) {
@@ -122,6 +120,7 @@ const ValidatedForm = ({
   }
 
   function resetForm () {
+    ref.current.reset();
     setState({});
     setFormVals({});
   }
