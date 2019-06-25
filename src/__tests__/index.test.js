@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-indent */
 /* eslint-disable indent */
 /* eslint-disable padded-blocks */
-import { ValidatedForm, FormGuard, validators } from './index';
+import { ValidatedForm, FormGuard, validators } from '../index';
 import { render, cleanup, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -11,11 +11,12 @@ afterEach(cleanup);
 
 describe('ValidatedForm', () => {
 
-  it('is truthy', () => {
+  test('is truthy', () => {
     expect(ValidatedForm).toBeTruthy()
   });
 
-  it('Allows form elements and guards to be arbitrarily nested in other dom nodes', () => {
+  test('Allows form elements and guards to be arbitrarily nested in other dom nodes', () => {
+
     const expectedValue = 'Expected Value';
     const onSubmit = jest.fn();
 
@@ -47,7 +48,8 @@ describe('ValidatedForm', () => {
     expect(queryByText('Error Message', container)).toBe(null);
   });
 
-  it('ForGuards can watch multiple parameters by passing an array to watches', () => {
+  test('ForGuards can watch multiple parameters by passing an array to watches', () => {
+
     const expectedValue = 'Expected Value';
     const onSubmit = jest.fn();
 
@@ -80,8 +82,54 @@ describe('ValidatedForm', () => {
     expect(queryByText('Error Message', container)).toBe(null);
   });
 
+  describe('reset', () => {
+    test('passes a function onSubmit that resets the form when called', () => {
+
+      const onSubmit = jest.fn((_, __, reset) => reset());
+  
+      const { getByTestId } = render(
+        <ValidatedForm onSubmit={onSubmit}>
+          <FormGuard
+            watches={'theInput'}
+            validatesWith={val => val === 'Some text'}>
+            Error Message
+          </FormGuard>
+          <input type='text' data-testid='input1' id='input1' name='theInput' />
+          <input type='text' data-testid='input2' id='input2' name='theInput2' />
+          <input type='checkbox' name='checkBox1' data-testid='check1' id='example1-checkbox1' />
+          <input type='checkbox' name='checkBox2' data-testid='check2' id='example1-checkbox2' />
+          <input type='submit' data-testid='submit' value='Submit' />
+        </ValidatedForm>
+      );
+  
+      const input1 = getByTestId('input1');
+      const input2 = getByTestId('input2');
+      const check1 = getByTestId('check1');
+      const check2 = getByTestId('check2');
+      const submit = getByTestId('submit');
+
+      fireEvent.change(input1, { target: { value: 'Some text' } });
+      fireEvent.change(input2, { target: { value: 'Some other text' } });
+      fireEvent.click(check1);
+      
+      expect(input1.value).toBe('Some text');
+      expect(input2.value).toBe('Some other text');
+      expect(check1.checked).toBe(true);
+      expect(check2.checked).toBe(false);
+      
+      fireEvent.click(submit);
+      
+      expect(input1.value).toBe('');
+      expect(input2.value).toBe('');
+      expect(check1.checked).toBe(false);
+      expect(check2.checked).toBe(false);
+      
+    });  
+  });
+
   describe('Sets initial values equal to the formVals prop', () => {
-    it('<input type=text />', () => {
+
+    test('<input type=text />', () => {
 
       const onSubmit = jest.fn();
       const { getByText, container } = render(
@@ -103,7 +151,7 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[0][1]).toEqual({ input1: '1', input2: '2' });
     });
 
-    it('<select />', () => {
+    test('<select />', () => {
   
       const expectedValue = 'Some Different Text';
       const onSubmit = jest.fn();
@@ -127,7 +175,7 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: expectedValue });
     });
 
-    it('<select multiple />', () => {
+    test('<select multiple />', () => {
   
       const expectedValue = ['Some Different Text', 'Some Text'];
       const onSubmit = jest.fn();
@@ -151,7 +199,7 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: expectedValue });
     });
 
-    it('<input type="radio" />', () => {
+    test('<input type="radio" />', () => {
   
       const onSubmit = jest.fn();
       const { getByText, container } = render(
@@ -174,7 +222,7 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: 'Value 2' });
     });
 
-    it('<input type="checkbox" />', () => {
+    test('<input type="checkbox" />', () => {
 
       const onSubmit = jest.fn();
       const expectedValues = { theInput1: true, theInput3: true };
@@ -199,7 +247,8 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[0][1]).toEqual(expectedValues);
     });
 
-    it('<textarea />', () => {
+    test('<textarea />', () => {
+
       const expectedValue = 'Some Text';
       const onSubmit = jest.fn();
   
@@ -221,7 +270,8 @@ describe('ValidatedForm', () => {
   });
 
   describe('Passes non-validated input values through onSubmit', () => {
-    it('<input type=text />', () => {
+
+    test('<input type=text />', () => {
 
       const expectedValue = 'Some Text';
       const onSubmit = jest.fn();
@@ -244,8 +294,8 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: expectedValue });
     });
   
-    it('<select />', () => {
-  
+    test('<select />', () => {
+
       const expectedValue = 'Some Different Text';
       const onSubmit = jest.fn();
   
@@ -271,8 +321,8 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: expectedValue });
     });
   
-    it('<select-multiple />', () => {
-  
+    test('<select-multiple />', () => { 
+
       const expectedValues = ['Some Text', 'Some Different Text'];
       const onSubmit = jest.fn();
   
@@ -301,8 +351,8 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: expectedValues });
     });
   
-    it('<input type="radio" />', () => {
-  
+    test('<input type="radio" />', () => {
+
       const onSubmit = jest.fn();
   
       const { getByText, getByLabelText, container } = render(
@@ -334,7 +384,7 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[1][1]).toEqual({ theInput: 'Value 1' });
     });
   
-    it('<input type="checkbox" />', () => {
+    test('<input type="checkbox" />', () => {
 
       const onSubmit = jest.fn();
       const { getByText, getByLabelText, container } = render(
@@ -364,7 +414,8 @@ describe('ValidatedForm', () => {
       });
     });
 
-    it('<textarea />', () => {
+    test('<textarea />', () => {
+
       const expectedValue = 'Some Text';
       const onSubmit = jest.fn();
   
@@ -389,7 +440,8 @@ describe('ValidatedForm', () => {
 
   describe('Shows error message when input is invalid', () => {
 
-    it('<input type="text" />', () => {
+    test('<input type="text" />', () => {
+    
       const expectedValue = 'Expected Value';
       const onSubmit = jest.fn();
 
@@ -415,9 +467,9 @@ describe('ValidatedForm', () => {
       expect(queryByText('Error Message', container)).toBe(null);
     });
 
-    it('<select />', () => {
-      const onSubmit = jest.fn();
+    test('<select />', () => {
 
+      const onSubmit = jest.fn();
       const { getByText, queryByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
           <label htmlFor='theInput'>Test:</label>
@@ -444,7 +496,8 @@ describe('ValidatedForm', () => {
       expect(queryByText('Error Message', container)).toBe(null);
     });
 
-    it('<select multiple />', () => {
+    test('<select multiple />', () => {
+
       const onSubmit = jest.fn();
       const { getByText, queryByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
@@ -474,7 +527,8 @@ describe('ValidatedForm', () => {
       expect(queryByText('Error Message', container)).toBe(null);
     });
 
-    it('<input type="radio" />', () => {
+    test('<input type="radio" />', () => {
+
       const onSubmit = jest.fn();
       const { getByText, queryByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
@@ -505,9 +559,9 @@ describe('ValidatedForm', () => {
       expect(queryByText('Error Message', container)).toBe(null);
     });
 
-    it('<input type="checkbox" />', () => {
-      const onSubmit = jest.fn();
+    test('<input type="checkbox" />', () => {
 
+      const onSubmit = jest.fn();
       const { getByText, queryByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
           <FormGuard
@@ -534,7 +588,8 @@ describe('ValidatedForm', () => {
       expect(queryByText('Error Message', container)).toBeTruthy();
     });
 
-    it('<textarea />', () => {
+    test('<textarea />', () => {
+
       const expectedValue = 'Expected Value';
       const onSubmit = jest.fn();
 
@@ -563,7 +618,8 @@ describe('ValidatedForm', () => {
 
   describe('Only calls onSubmit when input is valid', () => {
 
-    it('<input type="text" />', () => {
+    test('<input type="text" />', () => {
+
       const expectedValue = 'Expected Value';
       const onSubmit = jest.fn();
 
@@ -595,10 +651,9 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: expectedValue });
     });
 
-    it('<select />', () => {
+    test('<select />', () => {
 
       const onSubmit = jest.fn();
-
       const { getByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
           <label htmlFor='theInput'>Test:</label>
@@ -629,10 +684,9 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: '1' });
     });
 
-    it('<select multiple/>', () => {
+    test('<select multiple/>', () => {
 
       const onSubmit = jest.fn();
-
       const { getByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
           <label htmlFor='theInput'>Test:</label>
@@ -667,9 +721,9 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: ['1', '2'] });
     });
 
-    it('<input type="radio" />', () => {
-      const onSubmit = jest.fn();
+    test('<input type="radio" />', () => {
 
+      const onSubmit = jest.fn();
       const { getByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
           <FormGuard
@@ -703,7 +757,7 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[1][1]).toEqual({ theInput: '2' });
     });
 
-    it('<textarea />', () => {
+    test('<textarea />', () => {
 
       const expectedValue = 'Expected Value';
       const onSubmit = jest.fn();
@@ -739,7 +793,7 @@ describe('ValidatedForm', () => {
 
   describe('validators', () => {
 
-    it('required', () => {
+    test('required', () => {
       expect(validators.required([])).toBe(false);
       expect(validators.required('')).toBe(false);
       expect(validators.required({})).toBe(false);
@@ -750,7 +804,7 @@ describe('ValidatedForm', () => {
       expect(validators.required(4)).toBe(true);
     });
 
-    it('email', () => {
+    test('email', () => {
       expect(validators.email('Hello')).toBe(false);
       expect(validators.email('something@something')).toBe(false);
       expect(validators.email('something@something.co')).toBe(true);
@@ -760,7 +814,7 @@ describe('ValidatedForm', () => {
       expect(validators.email('some_th.ing+e.l.se@www.some-thing.com')).toBe(true);
     });
 
-    it('phone', () => {
+    test('phone', () => {
       expect(validators.phone('Hello')).toBe(false);
       expect(validators.phone('123232123')).toBe(false);
       expect(validators.phone('333')).toBe(false);
@@ -775,7 +829,7 @@ describe('ValidatedForm', () => {
       expect(validators.phone('+1123 4534345')).toBe(true); 
     });
 
-    it('minLength', () => {
+    test('minLength', () => {
       expect(validators.minLength(10)('Hello')).toBe(false);
       expect(validators.minLength(10)('123456789')).toBe(false);
       expect(validators.minLength(4)('333')).toBe(false);
@@ -783,7 +837,7 @@ describe('ValidatedForm', () => {
       expect(validators.minLength(5)('123456')).toBe(true);
     });
 
-    it('maxLength', () => {
+    test('maxLength', () => {
       expect(validators.maxLength(10)('Hello')).toBe(true);
       expect(validators.maxLength(10)('123456789')).toBe(true);
       expect(validators.maxLength(4)('333')).toBe(true);

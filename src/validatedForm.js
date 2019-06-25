@@ -1,5 +1,7 @@
+/* eslint-disable brace-style */
+/* eslint-disable no-multi-spaces */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
+import React, { cloneElement, useState, useRef, useEffect } from 'react';
 import {asArray} from './helper-utils';
 import FormGuard from './formGuard';
 
@@ -17,28 +19,40 @@ const ValidatedForm = ({
   onSubmit,
   formVals = {}
 }) => {
+  // State consists of:
+  // dirty: has the control been changed?
+  // validated: Set by formguard to true if the input is being watched
+  // isvalid: true when all the conditions of all watching formguards are met
+  // updating: is true when the input changes, becomes false once a formguard
+  //  handles the control.  Stops the 'input-invalid' class from being
+  //  temporarily applied while state is settling
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
+  const ref = useRef(null);
 
   useEffect(invalidateForm, [vals]);
+
+  return (
+    <form {...{ className, id, name, ref }} onSubmit={_onSubmit}>
+      {injectProps(children)}
+    </form>
+  );
 
   // This function walks through the children recursively and
   // replaces form elements with managed versions, and also passes
   // current form element values to relevant FormGuards for validation
   function injectProps (childNodes = []) {
     return React.Children.map(childNodes, (el, key) => {
-      const { props, type } = el;
-      const kids = props && props.children ? injectProps(props.children) : [];
+      if (!el || !el.props) { return el; }
+      const { props: { children }, type } = el;
+      const injected = injectProps(children);
       const isFormElement = ['input', 'select', 'textarea'].includes(type);
       const isGuard = type === FormGuard;
 
-      return isFormElement
-        ? handleFormElement(el, key)
-        : isGuard
-          ? handleFormGuard(el, key)
-          : kids.length > 0
-            ? React.cloneElement(el, {}, kids)
-            : el;
+      if      (isFormElement)       { return handleFormElement(el, key);     }
+      else if (isGuard)             { return handleFormGuard(el, key);       }
+      else if (injected.length > 0) { return cloneElement(el, {}, injected); }
+      else                          { return el; }
     });
 
     function handleFormElement (el, key) {
@@ -46,49 +60,38 @@ const ValidatedForm = ({
         const multiple = el.props.multiple;
         const [select, file] = [el.type === 'select', el.type === 'file'];
 
-        return (select && multiple)
-          ? 'select-multiple'
-          : (file && multiple)
-            ? 'file-multiple'
-            : el.props.type || el.type;
+        if      (select && multiple) { return 'select-multiple';        }
+        else if (file && multiple)   { return 'file-multiple';          }
+        else                         { return el.props.type || el.type; }
       }
 
       function determineValue (el, name, type) {
-        return (type === 'radio')
-          ? el.props.value
-          : (type.substr(0, 4) === 'file')
-            ? undefined // We cant programtically set file value
-            : vals[name] || el.props.value || defaultValues[type] || '';
+        const value = vals[name] || el.props.value || defaultValues[type] || '';
+
+        if      (type === 'radio')             { return el.props.value; }
+        else if (type.substr(0, 4) === 'file') { return undefined;      }
+        else                                   { return value;          }
       }
 
       const name = el.props.name;
-      const invalid = state[name] && state[name].isvalid === false;
       const type = getNormalizedType(el);
-      const className = (invalid && isDirty(name))
+      const value = determineValue(el, name, type);
+      const onChange = (e) => _onChange(e, el.props.onChange);
+      const invalid = state[name] && state[name].isvalid === false;
+      const className = (invalid && isDirty(name) && !state[name].updating)
         ? `${el.props.className} input-invalid`
         : el.props.className;
 
       return ['submit', 'image', 'reset'].includes(type)
         ? el
-        : React.cloneElement(el, {
-          key,
-          className,
-          value: determineValue(el, name, type),
-          onChange: (e) => _onChange(e, el.props.onChange)
-        });
+        : cloneElement(el, { key, className, value, onChange });
     }
 
     function handleFormGuard (el, key) {
       const watches = asArray(el.props.watches);
       const value = watches.map(name => vals[name] || '');
 
-      watches.forEach(name => {
-        if (!state[name] || !state[name].validated) {
-          mergeState(name, { validated: true });
-        }
-      });
-
-      return React.cloneElement(el, { state, key, mergeState, value });
+      return cloneElement(el, { state, key, mergeState, value });
     }
   }
 
@@ -109,7 +112,7 @@ const ValidatedForm = ({
     }
 
     if (!isDirty(name)) {
-      mergeState(name, { dirty: true });
+      mergeState(name, { dirty: true, updating: true });
     }
 
     setFormVal(name, value);
@@ -117,6 +120,7 @@ const ValidatedForm = ({
   }
 
   function resetForm () {
+    ref.current.reset();
     setState({});
     setFormVals({});
   }
@@ -139,6 +143,14 @@ const ValidatedForm = ({
     ));
   }
 
+  function setFormDirty () {
+    setStateValueForAllElements('dirty', true);
+  }
+
+  function invalidateForm () {
+    setStateValueForAllElements('isvalid', undefined);
+  }
+
   function isDirty (name) {
     return state[name] && state[name].dirty;
   }
@@ -149,20 +161,6 @@ const ValidatedForm = ({
 
     return invalidElements.length === 0;
   }
-
-  function setFormDirty () {
-    setStateValueForAllElements('dirty', true);
-  }
-
-  function invalidateForm () {
-    setStateValueForAllElements('isvalid', undefined);
-  }
-
-  return (
-    <form {...{ className, id, name }} onSubmit={_onSubmit}>
-      {injectProps(children)}
-    </form>
-  );
 }
 
 export default ValidatedForm;
