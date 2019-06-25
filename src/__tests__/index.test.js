@@ -16,6 +16,7 @@ describe('ValidatedForm', () => {
   });
 
   test('Allows form elements and guards to be arbitrarily nested in other dom nodes', () => {
+
     const expectedValue = 'Expected Value';
     const onSubmit = jest.fn();
 
@@ -48,6 +49,7 @@ describe('ValidatedForm', () => {
   });
 
   test('ForGuards can watch multiple parameters by passing an array to watches', () => {
+
     const expectedValue = 'Expected Value';
     const onSubmit = jest.fn();
 
@@ -81,6 +83,7 @@ describe('ValidatedForm', () => {
   });
 
   describe('Sets initial values equal to the formVals prop', () => {
+
     test('<input type=text />', () => {
 
       const onSubmit = jest.fn();
@@ -200,6 +203,7 @@ describe('ValidatedForm', () => {
     });
 
     test('<textarea />', () => {
+
       const expectedValue = 'Some Text';
       const onSubmit = jest.fn();
   
@@ -221,6 +225,7 @@ describe('ValidatedForm', () => {
   });
 
   describe('Passes non-validated input values through onSubmit', () => {
+
     test('<input type=text />', () => {
 
       const expectedValue = 'Some Text';
@@ -245,7 +250,7 @@ describe('ValidatedForm', () => {
     });
   
     test('<select />', () => {
-  
+
       const expectedValue = 'Some Different Text';
       const onSubmit = jest.fn();
   
@@ -271,8 +276,8 @@ describe('ValidatedForm', () => {
       expect(onSubmit.mock.calls[0][1]).toEqual({ theInput: expectedValue });
     });
   
-    test('<select-multiple />', () => {
-  
+    test('<select-multiple />', () => { 
+
       const expectedValues = ['Some Text', 'Some Different Text'];
       const onSubmit = jest.fn();
   
@@ -302,7 +307,7 @@ describe('ValidatedForm', () => {
     });
   
     test('<input type="radio" />', () => {
-  
+
       const onSubmit = jest.fn();
   
       const { getByText, getByLabelText, container } = render(
@@ -365,6 +370,7 @@ describe('ValidatedForm', () => {
     });
 
     test('<textarea />', () => {
+
       const expectedValue = 'Some Text';
       const onSubmit = jest.fn();
   
@@ -388,7 +394,9 @@ describe('ValidatedForm', () => {
   });
 
   describe('Shows error message when input is invalid', () => {
+
     test('<input type="text" />', () => {
+    
       const expectedValue = 'Expected Value';
       const onSubmit = jest.fn();
 
@@ -415,8 +423,8 @@ describe('ValidatedForm', () => {
     });
 
     test('<select />', () => {
-      const onSubmit = jest.fn();
 
+      const onSubmit = jest.fn();
       const { getByText, queryByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
           <label htmlFor='theInput'>Test:</label>
@@ -444,6 +452,7 @@ describe('ValidatedForm', () => {
     });
 
     test('<select multiple />', () => {
+
       const onSubmit = jest.fn();
       const { getByText, queryByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
@@ -474,6 +483,7 @@ describe('ValidatedForm', () => {
     });
 
     test('<input type="radio" />', () => {
+
       const onSubmit = jest.fn();
       const { getByText, queryByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
@@ -505,8 +515,8 @@ describe('ValidatedForm', () => {
     });
 
     test('<input type="checkbox" />', () => {
-      const onSubmit = jest.fn();
 
+      const onSubmit = jest.fn();
       const { getByText, queryByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
           <FormGuard
@@ -534,6 +544,7 @@ describe('ValidatedForm', () => {
     });
 
     test('<textarea />', () => {
+
       const expectedValue = 'Expected Value';
       const onSubmit = jest.fn();
 
@@ -561,7 +572,9 @@ describe('ValidatedForm', () => {
   });
 
   describe('Only calls onSubmit when input is valid', () => {
+
     test('<input type="text" />', () => {
+
       const expectedValue = 'Expected Value';
       const onSubmit = jest.fn();
 
@@ -596,7 +609,6 @@ describe('ValidatedForm', () => {
     test('<select />', () => {
 
       const onSubmit = jest.fn();
-
       const { getByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
           <label htmlFor='theInput'>Test:</label>
@@ -630,7 +642,6 @@ describe('ValidatedForm', () => {
     test('<select multiple/>', () => {
 
       const onSubmit = jest.fn();
-
       const { getByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
           <label htmlFor='theInput'>Test:</label>
@@ -666,8 +677,8 @@ describe('ValidatedForm', () => {
     });
 
     test('<input type="radio" />', () => {
-      const onSubmit = jest.fn();
 
+      const onSubmit = jest.fn();
       const { getByText, getByLabelText, container } = render(
         <ValidatedForm onSubmit={onSubmit}>
           <FormGuard
@@ -736,6 +747,7 @@ describe('ValidatedForm', () => {
   });
 
   describe('validators', () => {
+
     test('required', () => {
       expect(validators.required([])).toBe(false);
       expect(validators.required('')).toBe(false);
