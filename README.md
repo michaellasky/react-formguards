@@ -1,4 +1,5 @@
 # react-formguards
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
 
 > Simple, declarative, client side form validation
 
@@ -68,3 +69,15 @@ export default ExampleBasic;
 ## License
 
 MIT © [Michael Lasky](https://github.com/NuclearHorseStudios)
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+<table><tr><td align="center"><a href="https://github.com/michaellasky"><img src="https://avatars2.githubusercontent.com/u/6646599?v=4" width="100px;" alt="Michael Lasky"/><br /><sub><b>Michael Lasky</b></sub></a><br /><a href="#infra-michaellasky" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Tests">⚠️</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Documentation">📖</a> <a href="#maintenance-michaellasky" title="Maintenance">🚧</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Code">💻</a></td></tr></table>
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
