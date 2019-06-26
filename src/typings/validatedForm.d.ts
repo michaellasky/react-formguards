@@ -13,10 +13,6 @@ type OnSubmit = (
 ) => void
 
 type ValidatedFormProps = {
-  children: [ReactElement],
-  className?: string,
-  id?: string,
-  name: string,
   onSubmit: OnSubmit,
   formVals?: FormVals
 } & ReactElement
