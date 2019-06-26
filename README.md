@@ -2,13 +2,14 @@
 > Simple, declarative, client side form validation
 
 [![NPM](https://img.shields.io/npm/v/react-formguards.svg)](https://www.npmjs.com/package/react-formguards) [![SIZE](https://img.shields.io/bundlephobia/min/react-formguards.svg)](https://www.npmjs.com/package/react-formguards) [![Build Status](https://travis-ci.com/michaellasky/react-formguards.svg?branch=master)](https://travis-ci.com/michaellasky/react-formguards) [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors) 
+
 ## The Problem
 
-Client side form validation is a pain in the butt.  Most current solutions are large and complex.  Basic form validation should be simple.
+Client side form validation is a pain in the butt.  Many solutions are complex, cumbersome, or both.  Form validation should be simple.
 
 ## The Solution
 
-react-formguards is easy to use, but powerful.  Complex validation rules can be declaratively defined with simple &lt;FormGuard&gt; tags.  Just add FormGuards to your form markup and you're done!     
+react-formguards is very easy to use.  It's also somewhat powerful.  Simple or complex validation rules can be declaratively defined with simple &lt;FormGuard&gt; tags.  Just add FormGuards to your form markup and you're done!     
 
 ## Install
 
@@ -18,10 +19,12 @@ npm install --save react-formguards
 
 ## Usage
 
-Just replace your &lt;form&gt; tag with &lt;ValidatedForm&gt;, passing an onSubmit callback.  Then add a &lt;FormGuard&gt; tags anwhere you'd like validation errors to appear.  The FormGuards handle everything else for you.
+* Replace your &lt;form&gt; tag with &lt;ValidatedForm&gt;, passing an onSubmit callback. 
+  *(onSubmit is only called when all the FormGuard's are satisfied, which means the form is valid)*
 
+* Add &lt;FormGuard&gt; tags anwhere you'd like validation errors to appear.  The FormGuards handle everything else for you.
 
-Check out the [Live Examples!](https://michaellasky.github.io/react-formguards/)
+Check out the [Live Examples](https://michaellasky.github.io/react-formguards/) to see it in action!
 
 ```jsx
 import React from 'react';
@@ -73,7 +76,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
-<table><tr><td align="center"><a href="https://github.com/michaellasky"><img src="https://avatars2.githubusercontent.com/u/6646599?v=4" width="100px;" alt="Michael Lasky"/><br /><sub><b>Michael Lasky</b></sub></a><br /><a href="#infra-michaellasky" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Tests">⚠️</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Documentation">📖</a> <a href="#maintenance-michaellasky" title="Maintenance">🚧</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Code">💻</a></td></tr></table>
+<table><tr><td align="center"><a href="https://github.com/michaellasky"><img src="https://avatars2.githubusercontent.com/u/6646599?v=4" width="100px;" alt="Michael Lasky"/><br /><sub><b>Michael Lasky</b></sub></a><br /><a href="#infra-michaellasky" title="Infrastructure (Hosting, Build-Tools, etc)">�</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Tests">⚠️</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Documentation">�</a> <a href="#maintenance-michaellasky" title="Maintenance">�</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Code">�</a></td></tr></table>
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
