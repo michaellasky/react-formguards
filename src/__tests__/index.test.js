@@ -24,6 +24,7 @@ describe('ValidatedForm', () => {
       <ValidatedForm onSubmit={onSubmit}>
         <span>
           <label htmlFor='theInput'>Test:</label>
+          <br />
           <p>
             <FormGuard
               watches='theInput'

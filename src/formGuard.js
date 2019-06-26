@@ -5,7 +5,7 @@ import React from 'react';
 const FormGuard = ({
   children,
   watches,
-  state = {},
+  state,
   mergeState,
   validatesWith,
   value

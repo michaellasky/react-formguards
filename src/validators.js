@@ -1,18 +1,17 @@
 export const validators = {
-  phone: function (value = '') {
+  phone: function (value) {
     return PHONE_REGEX.test(value);
   },
-  email: function (value = '') {
+  email: function (value) {
     return EMAIL_REGEX.test(value);
   },
   minLength: function (len) {
-    return (value = '') => value.length >= len;
+    return (value) => value.length >= len;
   },
   maxLength: function(len) {
-    return (value = '') => value.length <= len;
+    return (value) => value.length <= len;
   },
   required: function(value = '') {
-
     return typeof value === 'number' || (
       value !== null &&
       value !== undefined &&

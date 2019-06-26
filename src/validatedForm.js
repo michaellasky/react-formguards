@@ -130,9 +130,7 @@ const ValidatedForm = ({
   }
 
   function setFormVal (name, val) {
-    val === undefined
-      ? setFormVals(vals.filter(val => val.name !== name))
-      : setFormVals({ ...vals, [name]: val });
+    setFormVals({ ...vals, [name]: val });
   }
 
   function setStateValueForAllElements (key, val) {
