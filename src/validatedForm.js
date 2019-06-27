@@ -91,7 +91,7 @@ const ValidatedForm = ({
       const watches = asArray(el.props.watches);
       const value = watches.map(name => vals[name] || '');
 
-      return cloneElement(el, { state, key, mergeState, value });
+      return cloneElement(el, { state, key, setState, value });
     }
   }
 

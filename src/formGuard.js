@@ -6,41 +6,42 @@ const FormGuard = ({
   children,
   watches,
   state,
-  mergeState,
+  setState,
   validatesWith,
   value
 }) => {
   const isvalid = !!validatesWith.apply(null, value);
 
-  const elState = asArray(watches).reduce((elState, name) => {
+  const elStates = asArray(watches).reduce((elState, name) => {
     const curState = state[name] || {};
+    const curStateEmpty = !state[name];
     const newState = {};
     const groupDirty = elState.groupDirty || curState.dirty;
 
     const markValid = isvalid && curState.isvalid === undefined;
     const invalidate = !isvalid && curState.isvalid !== false;
 
-    if (!curState.validated)     { newState.validated = true;  }
-    if (invalidate || markValid) { newState.isvalid = isvalid; }
-    if (curState.updating)       { newState.updating = false;  }
-
-    if (Object.entries(newState).length !== 0) {
-      mergeState(name, newState);
-    }
+    if (curStateEmpty || !curState.validated) { newState.validated = true;  }
+    if (invalidate || markValid)              { newState.isvalid = isvalid; }
+    if (curState.updating)                    { newState.updating = false;  }
 
     return { ...elState, [name]: newState, groupDirty };
   }, {});
 
-  // If one of the watches elements is dirty we want to mark them all dirty
-  if (elState.groupDirty) {
-    asArray(watches).forEach(name => {
-      if (state[name] && !state[name].dirty) {
-        mergeState(name, { dirty: true });
-      }
-    });
-  };
+  const dirty = elStates.groupDirty;
+  const hasNewState = Object.values(elStates)
+    .filter(s => Object.entries(s || {}).length > 0)
+    .length > 0;
 
-  return !isvalid && elState.groupDirty === true &&
+  hasNewState && setState({
+    ...state,
+    ...Object.entries(elStates).reduce(
+      (acc, [name, elState]) =>
+        ({ ...acc, [name]: { ...state[name], ...elState, dirty } }),
+      {})
+  });
+
+  return !isvalid && dirty === true &&
     <span className='validation-error'>{children}</span>;
 };
 
