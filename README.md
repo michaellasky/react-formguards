@@ -80,7 +80,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore -->
-<table><tr><td align="center"><a href="https://github.com/michaellasky"><img src="https://avatars2.githubusercontent.com/u/6646599?v=4" width="100px;" alt="Michael Lasky"/><br /><sub><b>Michael Lasky</b></sub></a><br /><a href="#infra-michaellasky" title="Infrastructure (Hosting, Build-Tools, etc)">�</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Tests">⚠️</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Documentation">�</a> <a href="#maintenance-michaellasky" title="Maintenance">�</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Code">�</a></td></tr></table>
+<table><tr><td align="center"><a href="https://github.com/michaellasky"><img src="https://avatars2.githubusercontent.com/u/6646599?v=4" width="100px;" alt="Michael Lasky"/><br /><sub><b>Michael Lasky</b></sub></a><br /><a href="#infra-michaellasky" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Tests">⚠️</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Documentation">📖</a> <a href="#maintenance-michaellasky" title="Maintenance">🚧</a> <a href="https://github.com/michaellasky/react-formguards/commits?author=michaellasky" title="Code">💻</a></td></tr></table>
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
