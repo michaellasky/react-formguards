@@ -1,7 +1,7 @@
 # react-formguards
 > Simple, declarative, client side form validation
 
-[![NPM](https://img.shields.io/npm/v/react-formguards.svg)](https://www.npmjs.com/package/react-formguards) [![SIZE](https://img.shields.io/bundlephobia/min/react-formguards.svg)](https://bundlephobia.com/result?p=react-formguards) [![SIZE](https://img.shields.io/bundlephobia/minzip/react-formguards.svg)](https://bundlephobia.com/result?p=react-formguards) [![Build Status](https://travis-ci.com/michaellasky/react-formguards.svg?branch=master)](https://travis-ci.com/michaellasky/react-formguards) [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors) 
+[![NPM](https://img.shields.io/npm/v/react-formguards.svg)](https://www.npmjs.com/package/react-formguards) [![SIZE](https://img.shields.io/bundlephobia/min/react-formguards/1.0.5.svg)](https://bundlephobia.com/result?p=react-formguards) [![SIZE](https://img.shields.io/bundlephobia/minzip/react-formguards/1.0.5.svg)](https://bundlephobia.com/result?p=react-formguards) [![Build Status](https://travis-ci.com/michaellasky/react-formguards.svg?branch=master)](https://travis-ci.com/michaellasky/react-formguards) [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors) 
 
 ## The Problem
 
