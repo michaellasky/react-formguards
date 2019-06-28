@@ -1,4 +1,3 @@
-/* eslint-disable no-multi-spaces */
 import React from 'react';
 
 const FormGuard = ({ children, dirty, isvalid }) => {
