@@ -66,10 +66,6 @@ const ExampleBasic = () => {
 export default ExampleBasic;
 ```
 
-## Limitations 
-
-Currently the maximum number of FormGuards per ValidatedForm is ~50.  This is because a state update is triggered for each one. With too many, react thinks it's an infinite loop and bails early.  This should be a temporary condition.  
-
 ## License
 
 MIT © [Michael Lasky](https://github.com/NuclearHorseStudios)
