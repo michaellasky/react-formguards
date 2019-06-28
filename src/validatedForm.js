@@ -105,31 +105,25 @@ const ValidatedForm = ({
         const markValid = isvalid && curState.isvalid === undefined;
         const invalidate = !isvalid && curState.isvalid !== false;
 
-        if (curStateEmpty || !curState.validated) {
-          stateBuffer[name].validated = true;
+        if (curStateEmpty || !curState.validated) { 
+          stateBuffer[name].validated = true;  
         }
-
-        if (invalidate || markValid) {
-          stateBuffer[name].isvalid = isvalid;
+        if (invalidate || markValid) { 
+          stateBuffer[name].isvalid = isvalid; 
         }
 
         return groupDirty || curState.dirty === true;
       }, false);
 
-      const newlyDirty = watches
-        .filter(
-          name =>
-            stateBuffer[name].dirty !== dirty ||
-            (state[name] && state[name].dirty !== dirty));
-
+      // If any in the group are dirty it makes the whole group dirty
       stateBuffer = {
         ...stateBuffer,
         ...watches.reduce(
           (acc, name) => ({
             ...acc,
-            [name]: !newlyDirty.includes(name)
-              ? { ...stateBuffer[name], dirty }
-              : stateBuffer[name]}),
+            [name]: isDirty(name) === dirty
+              ? stateBuffer[name]
+              : { ...stateBuffer[name], dirty } }),
           {})
       };
 
@@ -199,7 +193,8 @@ const ValidatedForm = ({
   }
 
   function isDirty (name) {
-    return state[name] && state[name].dirty;
+    return (stateBuffer[name] && stateBuffer[name].dirty) 
+      || (state[name] && state[name].dirty);
   }
 
   function formIsValid () {
