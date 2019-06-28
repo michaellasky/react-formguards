@@ -24,22 +24,14 @@ const ValidatedForm = ({
   //  dirty: has the control been changed?
   //  validated: set by FormGuard to true if the input is being watched
   //  isvalid: true when all the conditions of all watching FormGuards are met
-  //  updating: is true when the input changes, becomes false once a FormGuard
-  //    handles the control.  Stops the 'input-invalid' class from being
-  //    temporarily applied while state is settling
   let stateBuffer = {};
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
   const formRef = useRef(null);
   const managedChildren = injectProps(children);
-  const newState = Object
-    .values(stateBuffer)
-    .filter(s => Object.keys(s).length > 0)
-    .length > 0;
+  const newState = Object.values(stateBuffer).filter(s => Object.keys(s).length > 0).length > 0;
 
-  if (newState) {
-    setState(mergeState(state, stateBuffer));
-  }
+  if (newState) { setState(mergeState(state, stateBuffer)); }
 
   useEffect(invalidateForm, [vals]);
 
@@ -91,7 +83,7 @@ const ValidatedForm = ({
       const value = determineValue(el, name, type);
       const onChange = (e) => _onChange(e, el.props.onChange);
       const invalid = state[name] && state[name].isvalid === false;
-      const className = (invalid && isDirty(name) && !state[name].updating)
+      const className = invalid && isDirty(name)
         ? `${el.props.className} input-invalid`
         : el.props.className;
 
@@ -109,23 +101,37 @@ const ValidatedForm = ({
       const dirty = watches.reduce((groupDirty, name) => {
         stateBuffer[name] = stateBuffer[name] || {};
         const curState = mergeState(state[name], stateBuffer[name]);
-        const curStateEmpty = !curState || Object.keys(curState).length === 0;
+        const curStateEmpty = Object.keys(curState).length === 0;
         const markValid = isvalid && curState.isvalid === undefined;
         const invalidate = !isvalid && curState.isvalid !== false;
 
-        if (curStateEmpty || !curState.validated) { stateBuffer[name].validated = true;  }
-        if (invalidate || markValid)              { stateBuffer[name].isvalid = isvalid; }
-        if (curState.updating)                    { stateBuffer[name].updating = false;  }
+        if (curStateEmpty || !curState.validated) {
+          stateBuffer[name].validated = true;
+        }
+
+        if (invalidate || markValid) {
+          stateBuffer[name].isvalid = isvalid;
+        }
 
         return groupDirty || curState.dirty === true;
       }, false);
 
-      // stateBuffer = {
-      //   ...stateBuffer,
-      //   ...watches.reduce(
-      //     (acc, name) => ({ ...acc, [name]: { ...stateBuffer[name], dirty } }),
-      //     {})
-      // }
+      const newlyDirty = watches
+        .filter(
+          name =>
+            stateBuffer[name].dirty !== dirty ||
+            (state[name] && state[name].dirty !== dirty));
+
+      stateBuffer = {
+        ...stateBuffer,
+        ...watches.reduce(
+          (acc, name) => ({
+            ...acc,
+            [name]: !newlyDirty.includes(name)
+              ? { ...stateBuffer[name], dirty }
+              : stateBuffer[name]}),
+          {})
+      };
 
       return cloneElement(el, { key, value, dirty, isvalid });
     }
@@ -155,7 +161,7 @@ const ValidatedForm = ({
     }
 
     if (!isDirty(name)) {
-      updateState(name, { dirty: true, updating: true });
+      updateState(name, { dirty: true });
     }
 
     setFormVal(name, value);
