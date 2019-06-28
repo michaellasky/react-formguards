@@ -184,8 +184,8 @@ const ValidatedForm = ({
 
   function setStateValueForAllElements (key, val) {
     setState(Object.entries(state).reduce(
-      (acc, [name, controlState]) =>
-        ({ ...acc, [name]: { ...controlState, [key]: val } }),
+      (acc, [name, elState]) =>
+        ({ ...acc, [name]: { ...elState, [key]: val } }),
       {}
     ));
   }

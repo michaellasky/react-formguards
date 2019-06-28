@@ -274,9 +274,9 @@ const App = () => {
           <div className='example-implementation'>
             <details>
               <summary>Click to see example.  </summary>
-              <p>
+              <div>
                 <ExampleBenchmark />
-              </p>
+              </div>
             </details>
           </div>
         </div>
