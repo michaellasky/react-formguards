@@ -29,7 +29,10 @@ const ValidatedForm = ({
   const [vals, setFormVals] = useState(formVals);
   const formRef = useRef(null);
   const managedChildren = injectProps(children);
-  const newState = Object.values(stateBuffer).filter(s => Object.keys(s).length > 0).length > 0;
+  const newState = Object
+    .values(stateBuffer)
+    .filter(s => Object.keys(s).length > 0)
+    .length > 0;
 
   if (newState) { setState(mergeState(state, stateBuffer)); }
 
@@ -42,8 +45,7 @@ const ValidatedForm = ({
   );
 
   // This function walks through the children recursively and
-  // replaces form elements with managed versions, and also passes
-  // current form element values to relevant FormGuards for validation
+  // replaces form elements with managed versions
   function injectProps (childNodes = []) {
     return React.Children.map(childNodes, (el, key) => {
       if (!el || !el.props) { return el; }
@@ -105,11 +107,11 @@ const ValidatedForm = ({
         const markValid = isvalid && curState.isvalid === undefined;
         const invalidate = !isvalid && curState.isvalid !== false;
 
-        if (curStateEmpty || !curState.validated) { 
-          stateBuffer[name].validated = true;  
+        if (curStateEmpty || !curState.validated) {
+          stateBuffer[name].validated = true;
         }
-        if (invalidate || markValid) { 
-          stateBuffer[name].isvalid = isvalid; 
+        if (invalidate || markValid) {
+          stateBuffer[name].isvalid = isvalid;
         }
 
         return groupDirty || curState.dirty === true;
@@ -193,8 +195,8 @@ const ValidatedForm = ({
   }
 
   function isDirty (name) {
-    return (stateBuffer[name] && stateBuffer[name].dirty) 
-      || (state[name] && state[name].dirty);
+    return (stateBuffer[name] && stateBuffer[name].dirty) ||
+           (state[name] && state[name].dirty);
   }
 
   function formIsValid () {
