@@ -3,7 +3,6 @@
 /* eslint-disable react/prop-types */
 import React, { cloneElement, useState, useRef, useEffect } from 'react';
 import {asArray} from './helper-utils';
-import mergeWith from 'lodash.mergewith';
 import FormGuard from './formGuard';
 
 const defaultValues = {
@@ -134,10 +133,15 @@ const ValidatedForm = ({
   }
 
   function mergeState (state1, state2) {
-    return mergeWith(
-      state1,
-      state2,
-      (v1, v2, k) => k === 'isvalid' ? v1 && v2 : undefined);
+    if (!state1 || !state2) { return (state1 || state2) || {}; }
+
+    return {
+      ...state1,
+      ...Object.entries(state2).reduce(
+        (acc, [name, elState]) =>
+          ({ ...acc, [name]: { ...state1[name], ...elState } }),
+        {})
+    }
   }
 
   function _onSubmit (e) {
@@ -171,7 +175,7 @@ const ValidatedForm = ({
   }
 
   function updateState (name, st) {
-    setState(mergeWith(state, { [name]: st }));
+    setState(mergeState(state, { [name]: st }));
   }
 
   function setFormVal (name, val) {
