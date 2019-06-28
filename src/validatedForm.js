@@ -30,12 +30,12 @@ const ValidatedForm = ({
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
   const numGuards = countFormGuards(children);
-  const ref = useRef(null);
+  const formRef = useRef(null);
 
   useEffect(invalidateForm, [vals]);
 
   return (
-    <form {...{ className, id, name, ref }} onSubmit={_onSubmit}>
+    <form {...{ className, id, name, ref: formRef, onSubmit: _onSubmit }} >
       {injectProps(children)}
     </form>
   );
@@ -94,20 +94,27 @@ const ValidatedForm = ({
         : cloneElement(el, { key, className, value, onChange });
     }
 
-    function mergeState (state1, state2) {
-      return mergeWith(state1, state2, (val1, val2, key) => key === 'isvalid' ? val1 && val2 : undefined);
-    }
-
-    function bufferState (newState) {
-      numGuardsHandled += 1;
-      stateBuffer = mergeState(stateBuffer, newState);
-
-      if (numGuardsHandled === numGuards) {
-        setState(mergeState(state, stateBuffer));
-      }
-    }
-
     function handleFormGuard (el, key) {
+      // bufferState keeps a running buffer of state updates from FormGuards
+      // See: https://github.com/michaellasky/react-formguards/issues/5
+      // Once it has buffered the same number of states as the number of
+      // FormGuards in this ValidatedForm, only then does it call setState
+      function bufferState (newState) {
+        function mergeState (state1, state2) {
+          return mergeWith(
+            state1,
+            state2,
+            (v1, v2, k) => k === 'isvalid' ? v1 && v2 : undefined);
+        }
+
+        numGuardsHandled += 1;
+        stateBuffer = mergeState(stateBuffer, newState);
+
+        if (numGuardsHandled === numGuards) {
+          setState(mergeState(state, stateBuffer));
+        }
+      }
+
       const watches = asArray(el.props.watches);
       const value = watches.map(name => vals[name] || '');
 
@@ -132,7 +139,7 @@ const ValidatedForm = ({
     }
 
     if (!isDirty(name)) {
-      mergeState(name, { dirty: true, updating: true });
+      updateState(name, { dirty: true, updating: true });
     }
 
     setFormVal(name, value);
@@ -140,13 +147,13 @@ const ValidatedForm = ({
   }
 
   function resetForm () {
-    ref.current.reset();
+    formRef.current.reset();
     setState({});
     setFormVals({});
   }
 
-  function mergeState (name, st) {
-    setState({ ...state, [name]: { ...state[name], ...st } });
+  function updateState (name, st) {
+    setState(mergeWith(state, { [name]: st }));
   }
 
   function setFormVal (name, val) {
@@ -187,10 +194,8 @@ const ValidatedForm = ({
   function countFormGuards (nodes) {
     function flattenDOM(nodes) {
       return React.Children.map(nodes, node => {
-        const children = node.props
-          ? Array.isArray(node.props.children)
-            ? node.props.children
-            : []
+        const children = node.props && Array.isArray(node.props.children)
+          ? node.props.children
           : [];
 
         return [
