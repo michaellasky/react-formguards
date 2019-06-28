@@ -27,16 +27,25 @@ const ValidatedForm = ({
   //  updating: is true when the input changes, becomes false once a FormGuard
   //    handles the control.  Stops the 'input-invalid' class from being
   //    temporarily applied while state is settling
+  let stateBuffer = {};
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
-  const numGuards = countFormGuards(children);
   const formRef = useRef(null);
+  const managedChildren = injectProps(children);
+  const newState = Object
+    .values(stateBuffer)
+    .filter(s => Object.keys(s).length > 0)
+    .length > 0;
+
+  if (newState) {
+    setState(mergeState(state, stateBuffer));
+  }
 
   useEffect(invalidateForm, [vals]);
 
   return (
     <form {...{ className, id, name, ref: formRef, onSubmit: _onSubmit }} >
-      {injectProps(children)}
+      {managedChildren}
     </form>
   );
 
@@ -44,9 +53,6 @@ const ValidatedForm = ({
   // replaces form elements with managed versions, and also passes
   // current form element values to relevant FormGuards for validation
   function injectProps (childNodes = []) {
-    let stateBuffer = {};
-    let numGuardsHandled = 0;
-
     return React.Children.map(childNodes, (el, key) => {
       if (!el || !el.props) { return el; }
 
@@ -56,9 +62,9 @@ const ValidatedForm = ({
       const isFormElement = ['input', 'select', 'textarea'].includes(type);
       const isGuard = type === FormGuard;
 
-      if      (isFormElement) { return handleFormElement(el, key);          }
-      else if (isGuard)       { return handleFormGuard(el, key); }
-      else if (hasChildren)   { return cloneElement(el, {}, injected);      }
+      if      (isFormElement) { return handleFormElement(el, key);     }
+      else if (isGuard)       { return handleFormGuard(el, key);       }
+      else if (hasChildren)   { return cloneElement(el, {}, injected); }
       else                    { return el; }
     });
 
@@ -95,31 +101,41 @@ const ValidatedForm = ({
     }
 
     function handleFormGuard (el, key) {
-      // bufferState keeps a running buffer of state updates from FormGuards
-      // See: https://github.com/michaellasky/react-formguards/issues/5
-      // Once it has buffered the same number of states as the number of
-      // FormGuards in this ValidatedForm, only then does it call setState
-      function bufferState (newState) {
-        function mergeState (state1, state2) {
-          return mergeWith(
-            state1,
-            state2,
-            (v1, v2, k) => k === 'isvalid' ? v1 && v2 : undefined);
-        }
-
-        numGuardsHandled += 1;
-        stateBuffer = mergeState(stateBuffer, newState);
-
-        if (numGuardsHandled === numGuards) {
-          setState(mergeState(state, stateBuffer));
-        }
-      }
-
+      const validatesWith = el.props.validatesWith;
       const watches = asArray(el.props.watches);
       const value = watches.map(name => vals[name] || '');
+      const isvalid = !!validatesWith.apply(null, value);
 
-      return cloneElement(el, { state, key, bufferState, setState, value });
+      const dirty = watches.reduce((groupDirty, name) => {
+        stateBuffer[name] = stateBuffer[name] || {};
+        const curState = mergeState(state[name], stateBuffer[name]);
+        const curStateEmpty = !curState || Object.keys(curState).length === 0;
+        const markValid = isvalid && curState.isvalid === undefined;
+        const invalidate = !isvalid && curState.isvalid !== false;
+
+        if (curStateEmpty || !curState.validated) { stateBuffer[name].validated = true;  }
+        if (invalidate || markValid)              { stateBuffer[name].isvalid = isvalid; }
+        if (curState.updating)                    { stateBuffer[name].updating = false;  }
+
+        return groupDirty || curState.dirty === true;
+      }, false);
+
+      // stateBuffer = {
+      //   ...stateBuffer,
+      //   ...watches.reduce(
+      //     (acc, name) => ({ ...acc, [name]: { ...stateBuffer[name], dirty } }),
+      //     {})
+      // }
+
+      return cloneElement(el, { key, value, dirty, isvalid });
     }
+  }
+
+  function mergeState (state1, state2) {
+    return mergeWith(
+      state1,
+      state2,
+      (v1, v2, k) => k === 'isvalid' ? v1 && v2 : undefined);
   }
 
   function _onSubmit (e) {
@@ -181,37 +197,10 @@ const ValidatedForm = ({
   }
 
   function formIsValid () {
-    const states = Object.values(state);
-    const invalidElements = states.filter(s => s.validated && !s.isvalid);
-
-    return invalidElements.length === 0;
-  }
-
-  // This function will loop through the DOM and count the total number of
-  // FormGuard tags.  This is needed for an optimization allowing us to
-  // buffer state upates of individual FormGuards
-  // https://github.com/michaellasky/react-formguards/issues/5
-  function countFormGuards (nodes) {
-    function flattenDOM(nodes) {
-      return React.Children.map(nodes, node => {
-        const children = node.props && Array.isArray(node.props.children)
-          ? node.props.children
-          : [];
-
-        return [
-          node,
-          ...children.reduce(
-            (acc, child) => [...acc, ...flattenDOM(child)],
-            []
-          )
-        ]
-      })
-    }
-
-    return React.Children
-      .map(nodes, flattenDOM)
-      .filter(node => node.type === FormGuard)
-      .length;
+    return Object
+      .values(state)
+      .filter(s => s.validated && !s.isvalid)
+      .length === 0;
   }
 }
 

@@ -4,6 +4,7 @@ import ExampleFunction from './examples/example-function';
 import ExampleMultipleWatches from './examples/example-multiple-watches';
 import ExampleStyle from './examples/example-style';
 import ExampleValues from './examples/example-values';
+import ExampleBenchmark from './examples/example-benchmark';
 
 const App = () => {
   return (
@@ -244,6 +245,39 @@ const App = () => {
           </div>
           <div className='example-implementation'>
             <ExampleValues />
+          </div>
+        </div>
+
+        <div className='example'>
+          <div className='example-code'>
+            <h2>Large Forms</h2>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-benchmark.jsx'>Source</a>
+            <p>react-formguards handles large forms as well.  Here is a contrived exmaple with 200, individually validated, input boxes.</p>
+            <pre>
+              {`
+    <ValidatedForm onSubmit={(e, formVals) => console.log(formVals)}>
+
+    {[...Array(200).keys()].map(idx =>
+      <div key={idx}>
+        <label htmlFor={\`example2-input-\${idx}\`}>Label {idx}:</label>
+        <FormGuard watches={\`input-\${idx}\`} validatesWith={validators.required} >
+              Value is Required
+        </FormGuard>
+        <input type='text' name={\`input-\${idx}\`} id={\`example6-input-\${idx}\`} />
+      </div>
+    )}
+    <input type='submit' value='Check the console for onSubmit' />
+  </ValidatedForm>
+            `}
+            </pre>
+          </div>
+          <div className='example-implementation'>
+            <details>
+              <summary>Click to see example.  </summary>
+              <p>
+                <ExampleBenchmark />
+              </p>
+            </details>
           </div>
         </div>
       </section>
