@@ -19,9 +19,8 @@ npm install --save react-formguards
 
 ## Usage
 
-* Replace your &lt;form&gt; tag with &lt;ValidatedForm&gt;, passing an onSubmit callback. 
-  
-  * (onSubmit is only called when all the FormGuard's are satisfied, which means the form is valid)*
+* Replace your &lt;form&gt; tag with &lt;ValidatedForm&gt;, passing an onSubmit callback.  
+  * *onSubmit is only called when all the FormGuard's are satisfied, which means the form is valid*
 
 * Add &lt;FormGuard&gt; tags anwhere you'd like validation errors to appear.  The FormGuards handle everything else for you.
 
