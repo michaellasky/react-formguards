@@ -15,40 +15,6 @@ describe('ValidatedForm', () => {
     expect(ValidatedForm).toBeTruthy()
   });
 
-  test('Allows form elements and guards to be arbitrarily nested in other dom nodes', () => {
-
-    const expectedValue = 'Expected Value';
-    const onSubmit = jest.fn();
-
-    const { getByText, queryByText, getByLabelText, container } = render(
-      <ValidatedForm onSubmit={onSubmit}>
-        <span>
-          <label htmlFor='theInput'>Test:</label>
-          <br />
-          <p>
-            <FormGuard
-              watches='theInput'
-              validatesWith={(val) => val === expectedValue}>
-              Error Message
-            </FormGuard>
-          </p>
-          <div>
-            <span><input type='text' id='theInput' name='theInput' /></span>
-          </div>
-          <input type='submit' value='Submit' />
-        </span>
-      </ValidatedForm>
-    );
-
-    const input = getByLabelText('Test:', container);
-
-    fireEvent.change(input, { target: { value: 'Some Text' } });
-    expect(getByText('Error Message', container)).toBeTruthy();
-
-    fireEvent.change(input, { target: { value: expectedValue } });
-    expect(queryByText('Error Message', container)).toBe(null);
-  });
-
   test('ForGuards can watch multiple parameters by passing an array to watches', () => {
 
     const expectedValue = 'Expected Value';
