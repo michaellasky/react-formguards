@@ -3,6 +3,7 @@
 /* eslint-disable react/prop-types */
 import React, { cloneElement, useState, useRef, useEffect } from 'react';
 import {asArray} from './helper-utils';
+import mergeWith from 'lodash.mergewith';
 import FormGuard from './formGuard';
 
 const defaultValues = {
@@ -23,18 +24,20 @@ const ValidatedForm = ({
   //  dirty: has the control been changed?
   //  validated: set by FormGuard to true if the input is being watched
   //  isvalid: true when all the conditions of all watching FormGuards are met
-  //  updating: is true when the input changes, becomes false once a FormGuard
-  //    handles the control.  Stops the 'input-invalid' class from being
-  //    temporarily applied while state is settling
+  let stateBuffer = {};
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
-  const ref = useRef(null);
+  const formRef = useRef(null);
+  const managedChildren = injectProps(children);
+  const newState = Object.values(stateBuffer).filter(s => Object.keys(s).length > 0).length > 0;
+
+  if (newState) { setState(mergeState(state, stateBuffer)); }
 
   useEffect(invalidateForm, [vals]);
 
   return (
-    <form {...{ className, id, name, ref }} onSubmit={_onSubmit}>
-      {injectProps(children)}
+    <form {...{ className, id, name, ref: formRef, onSubmit: _onSubmit }} >
+      {managedChildren}
     </form>
   );
 
@@ -47,13 +50,14 @@ const ValidatedForm = ({
 
       const { props: { children }, type } = el;
       const injected = injectProps(children);
+      const hasChildren = injected.length > 0;
       const isFormElement = ['input', 'select', 'textarea'].includes(type);
       const isGuard = type === FormGuard;
 
-      if      (isFormElement)       { return handleFormElement(el, key);     }
-      else if (isGuard)             { return handleFormGuard(el, key);       }
-      else if (injected.length > 0) { return cloneElement(el, {}, injected); }
-      else                          { return el; }
+      if      (isFormElement) { return handleFormElement(el, key);     }
+      else if (isGuard)       { return handleFormGuard(el, key);       }
+      else if (hasChildren)   { return cloneElement(el, {}, injected); }
+      else                    { return el; }
     });
 
     function handleFormElement (el, key) {
@@ -79,7 +83,7 @@ const ValidatedForm = ({
       const value = determineValue(el, name, type);
       const onChange = (e) => _onChange(e, el.props.onChange);
       const invalid = state[name] && state[name].isvalid === false;
-      const className = (invalid && isDirty(name) && !state[name].updating)
+      const className = invalid && isDirty(name)
         ? `${el.props.className} input-invalid`
         : el.props.className;
 
@@ -89,11 +93,55 @@ const ValidatedForm = ({
     }
 
     function handleFormGuard (el, key) {
+      const validatesWith = el.props.validatesWith;
       const watches = asArray(el.props.watches);
       const value = watches.map(name => vals[name] || '');
+      const isvalid = !!validatesWith.apply(null, value);
 
-      return cloneElement(el, { state, key, setState, value });
+      const dirty = watches.reduce((groupDirty, name) => {
+        stateBuffer[name] = stateBuffer[name] || {};
+        const curState = mergeState(state[name], stateBuffer[name]);
+        const curStateEmpty = Object.keys(curState).length === 0;
+        const markValid = isvalid && curState.isvalid === undefined;
+        const invalidate = !isvalid && curState.isvalid !== false;
+
+        if (curStateEmpty || !curState.validated) {
+          stateBuffer[name].validated = true;
+        }
+
+        if (invalidate || markValid) {
+          stateBuffer[name].isvalid = isvalid;
+        }
+
+        return groupDirty || curState.dirty === true;
+      }, false);
+
+      const newlyDirty = watches
+        .filter(
+          name =>
+            stateBuffer[name].dirty !== dirty ||
+            (state[name] && state[name].dirty !== dirty));
+
+      stateBuffer = {
+        ...stateBuffer,
+        ...watches.reduce(
+          (acc, name) => ({
+            ...acc,
+            [name]: !newlyDirty.includes(name)
+              ? { ...stateBuffer[name], dirty }
+              : stateBuffer[name]}),
+          {})
+      };
+
+      return cloneElement(el, { key, value, dirty, isvalid });
     }
+  }
+
+  function mergeState (state1, state2) {
+    return mergeWith(
+      state1,
+      state2,
+      (v1, v2, k) => k === 'isvalid' ? v1 && v2 : undefined);
   }
 
   function _onSubmit (e) {
@@ -113,7 +161,7 @@ const ValidatedForm = ({
     }
 
     if (!isDirty(name)) {
-      mergeState(name, { dirty: true, updating: true });
+      updateState(name, { dirty: true });
     }
 
     setFormVal(name, value);
@@ -121,13 +169,13 @@ const ValidatedForm = ({
   }
 
   function resetForm () {
-    ref.current.reset();
+    formRef.current.reset();
     setState({});
     setFormVals({});
   }
 
-  function mergeState (name, st) {
-    setState({ ...state, [name]: { ...state[name], ...st } });
+  function updateState (name, st) {
+    setState(mergeWith(state, { [name]: st }));
   }
 
   function setFormVal (name, val) {
@@ -155,10 +203,10 @@ const ValidatedForm = ({
   }
 
   function formIsValid () {
-    const states = Object.values(state);
-    const invalidElements = states.filter(s => s.validated && !s.isvalid);
-
-    return invalidElements.length === 0;
+    return Object
+      .values(state)
+      .filter(s => s.validated && !s.isvalid)
+      .length === 0;
   }
 }
 
