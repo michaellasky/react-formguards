@@ -10,14 +10,25 @@ const App = () => {
   return (
     <>
       <section>
-        <h1>react-formguards</h1>
+        <h1 id='top'>react-formguards</h1>
         <h3>A simple, declarative approach to client side validation.</h3>
         <span><a href='https://www.npmjs.com/package/react-formguards'>npm</a> | <a href='https://github.com/NuclearHorseStudios/react-formguards'>github</a></span>
 
-        <div className='example'>
+        <ul>
+          <li><a href='#basic'>Basic Validation</a></li>
+          <li><a href='#custom'>Custom Validation Functions</a></li>
+          <li><a href='#multiple'>Watching Multiple Elements With One FormGuard</a></li>
+          <li><a href='#style'>Styling / CSS</a></li>
+          <li><a href='#preset'>Passing Preset Values</a></li>
+          <li><a href='#benchmark'>Performance / Large Forms With Many Elements</a></li>
+        </ul>
+
+        <hr />
+
+        <div id='basic' className='example'>
           <div className='example-code'>
             <h2>Basic Validation</h2>
-            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-basic.jsx'>Source</a>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-basic.jsx'>Source</a>  -  <a href='#top'>Back to top</a>
             <ol>
               <li>
                 Just write your form like normal, replacing your &lt;form&gt; tag with a &lt;ValidatedForm&gt; tag.  Pass it an onSubmit function.
@@ -91,11 +102,11 @@ const App = () => {
             <ExampleBasic />
           </div>
         </div>
-
-        <div className='example'>
+        <hr />
+        <div id='custom' className='example'>
           <div className='example-code'>
             <h2>Custom Validation Functions</h2>
-            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-function.jsx'>Source</a>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-function.jsx'>Source</a>  -  <a href='#top'>Back to top</a>
             <p>Just pass a function to validatesWith to use your own validation functions.</p>
             <pre>
               {`
@@ -117,10 +128,12 @@ const App = () => {
           </div>
         </div>
 
-        <div className='example'>
+        <hr />
+
+        <div id='multiple' className='example'>
           <div className='example-code'>
             <h2>Guarding Multiple Form Elements with one FormGuard</h2>
-            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-multiple-watches.jsx'>Source</a>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-multiple-watches.jsx'>Source</a>  -  <a href='#top'>Back to top</a>
             <p>A FormGuard can watch multiple elements by passing an array to the <i>watches</i> prop</p>
             <p>In this example the <i>validateTwoInputs</i> function requires that either <i>input1</i> OR <i>input2</i> is filled in.</p>
             <pre>
@@ -157,10 +170,12 @@ const App = () => {
           </div>
         </div>
 
-        <div className='example'>
+        <hr />
+
+        <div id='style' className='example'>
           <div className='example-code'>
             <h2>Styling / CSS</h2>
-            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-style.jsx'>Source</a>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-style.jsx'>Source</a>  -  <a href='#top'>Back to top</a>
             <p>react-formguards will add the css class 'input-invalid' to form controls that are invalid.</p>
             <p>The span that displays a FormGuard error text will have the css class 'validation-error'</p>
             <pre>
@@ -197,10 +212,12 @@ const App = () => {
           </div>
         </div>
 
-        <div className='example'>
+        <hr />
+
+        <div id='preset' className='example'>
           <div className='example-code'>
             <h2>Passing Preset Values</h2>
-            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-values.jsx'>Source</a>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-values.jsx'>Source</a>  -  <a href='#top'>Back to top</a>
             <p>Just pass an object as the formVals prop to preset values in the form.</p>
             <pre>
               {`
@@ -248,10 +265,12 @@ const App = () => {
           </div>
         </div>
 
-        <div className='example'>
+        <hr />
+
+        <div id='benchmark' className='example'>
           <div className='example-code'>
             <h2>Large Forms</h2>
-            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-benchmark.jsx'>Source</a>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-benchmark.jsx'>Source</a>  -  <a href='#top'>Back to top</a>
             <p>react-formguards handles large forms as well.  Here is a contrived exmaple with 200, individually validated, input boxes.</p>
             <pre>
               {`
