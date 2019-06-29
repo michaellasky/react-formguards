@@ -19,21 +19,27 @@ const ValidatedForm = ({
   onSubmit,
   formVals = {}
 }) => {
+  // stateBuffer accumulates state changes while the FormGuard tags are being
+  // processed with injectProps->handleformGuard.
+  // ...allowing us to only call setState once, after all FormGuards have been
+  // processed.
+  let stateBuffer = {};
+
   // state consists of:
   //  dirty: has the control been changed?
   //  validated: set by FormGuard to true if the input is being watched
   //  isvalid: true when all the conditions of all watching FormGuards are met
-  let stateBuffer = {};
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
   const formRef = useRef(null);
   const managedChildren = injectProps(children);
-  const newState = Object
+
+  const hasNewState = Object
     .values(stateBuffer)
     .filter(s => Object.keys(s).length > 0)
     .length > 0;
 
-  if (newState) { setState(mergeState(state, stateBuffer)); }
+  if (hasNewState) { setState(mergeState(state, stateBuffer)); }
 
   useEffect(invalidateForm, [vals]);
 
@@ -80,17 +86,20 @@ const ValidatedForm = ({
       }
 
       const name = el.props.name;
+      const elState = state[name] || {};
       const type = getNormalizedType(el);
       const value = determineValue(el, name, type);
       const onChange = (e) => _onChange(e, el.props.onChange);
-      const invalid = state[name] && state[name].isvalid === false;
-      const className = invalid && isDirty(name)
+      const onBlur = (e) => _onBlur(e, el.props.onBlue);
+
+      const invalid = elState.isvalid === false;
+      const className = invalid && elState.blurred === true
         ? `${el.props.className} input-invalid`
         : el.props.className;
 
       return ['submit', 'image', 'reset'].includes(type)
         ? el
-        : cloneElement(el, { key, className, value, onChange });
+        : cloneElement(el, { key, className, value, onChange, onBlur });
     }
 
     function handleFormGuard (el, key) {
@@ -99,7 +108,8 @@ const ValidatedForm = ({
       const value = watches.map(name => vals[name] || '');
       const isvalid = !!validatesWith.apply(null, value);
 
-      const dirty = watches.reduce((groupDirty, name) => {
+      // WARNING: Side Effect - This reducer also mutates stateBuffer
+      const [dirty, blurred] = watches.reduce(([groupDirty, blurred], name) => {
         stateBuffer[name] = stateBuffer[name] || {};
         const curState = mergeState(state[name], stateBuffer[name]);
         const curStateEmpty = Object.keys(curState).length === 0;
@@ -113,10 +123,11 @@ const ValidatedForm = ({
           stateBuffer[name].isvalid = isvalid;
         }
 
-        return groupDirty || curState.dirty === true;
-      }, false);
+        return [groupDirty || curState.dirty === true, blurred || curState.blurred];
+      }, [false, false]);
 
       // If any in the group are dirty it makes the whole group dirty
+      // TODO: Refactor this mess and the following for dirty / blurred
       stateBuffer = {
         ...stateBuffer,
         ...watches.reduce(
@@ -128,12 +139,23 @@ const ValidatedForm = ({
           {})
       };
 
+      stateBuffer = {
+        ...stateBuffer,
+        ...watches.reduce(
+          (acc, name) => ({
+            ...acc,
+            [name]: state[name] && state[name].blurred === blurred
+              ? stateBuffer[name]
+              : { ...stateBuffer[name], blurred } }),
+          {})
+      };
+
       return cloneElement(el, { key, value, dirty, isvalid });
     }
   }
 
   function mergeState (state1, state2) {
-    if (!state1 || !state2) { return (state1 || state2) || {}; }
+    if (!state1 || !state2) { return (state1 || state2); }
 
     return {
       ...state1,
@@ -160,12 +182,23 @@ const ValidatedForm = ({
       value = files;
     }
 
+    setFormVal(name, value);
+
     if (!isDirty(name)) {
-      updateState(name, { dirty: true });
+      setState(mergeState(state, { [name]: { dirty: true } }));
     }
 
-    setFormVal(name, value);
     onChange(e);
+  }
+
+  function _onBlur (e, onBlur = () => {}) {
+    const { target: { name } } = e;
+
+    if (state[name] && !state[name].blurred) {
+      setState(mergeState(state, { [name]: { blurred: true } }));
+    }
+
+    onBlur(e);
   }
 
   function resetForm () {
@@ -174,28 +207,24 @@ const ValidatedForm = ({
     setFormVals({});
   }
 
-  function updateState (name, st) {
-    setState(mergeState(state, { [name]: st }));
-  }
-
   function setFormVal (name, val) {
     setFormVals({ ...vals, [name]: val });
   }
 
-  function setStateValueForAllElements (key, val) {
+  function setStateValueForAllElements (st) {
     setState(Object.entries(state).reduce(
       (acc, [name, elState]) =>
-        ({ ...acc, [name]: { ...elState, [key]: val } }),
+        ({ ...acc, [name]: { ...elState, ...st } }),
       {}
     ));
   }
 
   function setFormDirty () {
-    setStateValueForAllElements('dirty', true);
+    setStateValueForAllElements({dirty: true, blurred: true});
   }
 
   function invalidateForm () {
-    setStateValueForAllElements('isvalid', undefined);
+    setStateValueForAllElements({isvalid: undefined});
   }
 
   function isDirty (name) {

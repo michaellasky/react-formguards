@@ -15,7 +15,7 @@ describe('ValidatedForm', () => {
     expect(ValidatedForm).toBeTruthy()
   });
 
-  test('ForGuards can watch multiple parameters by passing an array to watches', () => {
+  test('FormGuards can watch multiple parameters by passing an array to watches', () => {
 
     const expectedValue = 'Expected Value';
     const onSubmit = jest.fn();
