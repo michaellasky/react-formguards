@@ -96,7 +96,7 @@ const ValidatedForm = ({
       const type = getNormalizedType(el);
       const value = determineValue(el, name, type);
       const onChange = (e) => _onChange(e, el.props.onChange);
-      const onBlur = (e) => _onBlur(e, el.props.onBlue);
+      const onBlur = (e) => _onBlur(e, el.props.onBlur);
 
       const invalid = elState.isvalid === false;
       const className = invalid && elState.blurred === true
@@ -129,11 +129,11 @@ const ValidatedForm = ({
           stateBuffer[name].isvalid = isvalid;
         }
 
-        return [groupDirty || curState.dirty === true, blurred || curState.blurred];
+        return [(groupDirty || curState.dirty), (blurred || curState.blurred)];
       }, [false, false]);
 
       // If any in the group are dirty or blurred it makes the whole group dirty
-      // or blurred.  
+      // or blurred.
       // TODO: Refactor this mess for dirty / blurred
       stateBuffer = {
         ...stateBuffer,
