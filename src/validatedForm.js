@@ -2,8 +2,9 @@
 /* eslint-disable no-multi-spaces */
 /* eslint-disable react/prop-types */
 import React, { cloneElement, useState, useRef, useEffect } from 'react';
-import {asArray} from './helper-utils';
 import FormGuard from './formGuard';
+
+const asArray = val => Array.isArray(val) ? val : [val];
 
 const defaultValues = {
   'checkbox': false,
