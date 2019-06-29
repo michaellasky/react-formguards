@@ -41,7 +41,7 @@ const ExampleBasic = () => {
       <br />
       <FormGuard
         watches={['checkBox1', 'checkBox2', 'checkBox3']}
-        validatesWith={(cb1, cb2, cb3) => { return cb1 || cb2 || cb3}} >
+        validatesWith={(cb1, cb2, cb3) => { return cb1 || cb2 || cb3 }} >
                 Pick One!
       </FormGuard>
       <input type='checkbox' name='checkBox1' id='example1-checkbox1' />
