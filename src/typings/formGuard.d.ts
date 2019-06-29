@@ -8,9 +8,14 @@ type State = {
 
 type ValidatesWith = (args?: any) => boolean
 
-type FormGuardProps = {
+type initialProps = {
   watches: string[] | string,
   validatesWith: ValidatesWith
+} & ReactElement;
+
+type managedProps = {
+  dirty: boolean, 
+  isvalid: boolean  
 } & ReactElement
 
-export declare function FormGuard (props: FormGuardProps): ReactElement
+export declare function FormGuard (props: initialProps | managedProps): ReactElement
