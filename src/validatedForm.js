@@ -136,11 +136,7 @@ const ValidatedForm = ({
             [name]: isDirty(name) === dirty
               ? stateBuffer[name]
               : { ...stateBuffer[name], dirty } }),
-          {})
-      };
-
-      stateBuffer = {
-        ...stateBuffer,
+          {}),
         ...watches.reduce(
           (acc, name) => ({
             ...acc,
@@ -149,7 +145,7 @@ const ValidatedForm = ({
               : { ...stateBuffer[name], blurred } }),
           {})
       };
-
+      
       return cloneElement(el, { key, value, dirty, isvalid });
     }
   }
