@@ -7,12 +7,9 @@ type State = {
 }
 
 type ValidatesWith = (args?: any) => boolean
-type MergeState = (name: string, state: StateValue) => void
 
 type FormGuardProps = {
   watches: string[] | string,
-  state: State,
-  mergeState: MergeState,
   validatesWith: ValidatesWith
 } & ReactElement
 
