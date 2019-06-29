@@ -140,12 +140,12 @@ const ValidatedForm = ({
         ...watches.reduce(
           (acc, name) => ({
             ...acc,
-            [name]: state[name] && state[name].blurred === blurred
+            [name]: hasBeenBlurred(name) === blurred
               ? stateBuffer[name]
               : { ...stateBuffer[name], blurred } }),
           {})
       };
-      
+
       return cloneElement(el, { key, value, dirty, isvalid });
     }
   }
@@ -226,6 +226,11 @@ const ValidatedForm = ({
   function isDirty (name) {
     return (stateBuffer[name] && stateBuffer[name].dirty) ||
            (state[name] && state[name].dirty);
+  }
+
+  function hasBeenBlurred (name) {
+    return (stateBuffer[name] && stateBuffer[name].blurred) ||
+           (state[name] && state[name].blurred);
   }
 
   function formIsValid () {
