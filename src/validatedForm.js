@@ -23,12 +23,17 @@ const ValidatedForm = ({
   // processed with injectProps->handleformGuard.
   // ...allowing us to only call setState once, after all FormGuards have been
   // processed.
+  // See; https://github.com/michaellasky/react-formguards/issues/5
   let stateBuffer = {};
 
   // state consists of:
   //  dirty: has the control been changed?
   //  validated: set by FormGuard to true if the input is being watched
   //  isvalid: true when all the conditions of all watching FormGuards are met
+  //  blurred: true after the control has been focused and blurred once
+  //    Once an element has been blurred we know it's not the
+  //    initial change or click
+  //    See: https://github.com/michaellasky/react-formguards/issues/7
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
   const formRef = useRef(null);
@@ -126,8 +131,9 @@ const ValidatedForm = ({
         return [groupDirty || curState.dirty === true, blurred || curState.blurred];
       }, [false, false]);
 
-      // If any in the group are dirty it makes the whole group dirty
-      // TODO: Refactor this mess and the following for dirty / blurred
+      // If any in the group are dirty or blurred it makes the whole group dirty
+      // or blurred.  
+      // TODO: Refactor this mess for dirty / blurred
       stateBuffer = {
         ...stateBuffer,
         ...watches.reduce(
