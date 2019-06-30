@@ -9,7 +9,7 @@ Client side form validation is a pain in the butt.  Many solutions are complex, 
 
 ## The Solution
 
-react-formguards is powerful and very easy to use.  Simple or complex validation rules can be declaratively defined with only &lt;FormGuard&gt; tags.  Just add FormGuards and you're done!
+react-formguards is powerful and very easy to use.  Simple or complex validation rules can be declaratively defined with only &lt;FormGuard /&gt; tags.  Just add FormGuards and you're done!
 
 ## Install
 
@@ -19,10 +19,10 @@ npm install --save react-formguards
 
 ## Usage
 
-* Replace your &lt;form&gt; tag with &lt;ValidatedForm&gt;, passing an onSubmit callback.  
+* Replace your &lt;form /&gt; tag with &lt;ValidatedForm /&gt;, passing an onSubmit callback.  
   * *onSubmit is only called when all the FormGuard's are satisfied, which means the form is valid*
 
-* Add &lt;FormGuard&gt; tags anwhere you'd like validation errors to appear.  The FormGuards handle everything else for you.
+* Add &lt;FormGuard /&gt; tags anwhere you'd like validation errors to appear.  The FormGuards handle everything else for you.
 
 Check out the [Live Examples](https://michaellasky.github.io/react-formguards/) to see it in action!
 
