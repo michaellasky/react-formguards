@@ -29,7 +29,6 @@ Check out the [Live Examples](https://michaellasky.github.io/react-formguards/) 
 See the [wiki](https://github.com/michaellasky/react-formguards/wiki) for further documentation.
 
 ```jsx
-import React from 'react';
 import { ValidatedForm, FormGuard, validators } from 'react-formguards'
 
 const ExampleBasic = () => {
