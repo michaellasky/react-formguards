@@ -100,8 +100,8 @@ const ValidatedForm = ({
 
       const invalid = elState.isvalid === false;
       const className = invalid && elState.blurred === true
-        ? `${el.props.className} input-invalid`
-        : el.props.className;
+        ? `${el.props.className || ''} input-invalid`
+        : el.props.className || '';
 
       return ['submit', 'image', 'reset'].includes(type)
         ? el
