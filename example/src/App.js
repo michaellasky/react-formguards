@@ -5,6 +5,7 @@ import ExampleMultipleWatches from './examples/example-multiple-watches';
 import ExampleStyle from './examples/example-style';
 import ExampleValues from './examples/example-values';
 import ExampleBenchmark from './examples/example-benchmark';
+import ExampleFieldsets from './examples/example-fieldsets';
 
 const App = () => {
   return (
@@ -262,6 +263,48 @@ const App = () => {
           </div>
           <div className='example-implementation'>
             <ExampleValues />
+          </div>
+        </div>
+
+        <hr />
+
+        <div id='fieldsets' className='example'>
+          <div className='example-code'>
+            <h2>Fieldsets</h2>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-multiple-watches.jsx'>Source</a>  -  <a href='#top'>Back to top</a>
+            <p>A FormGuard can watch multiple elements by passing an array to the <i>watches</i> prop</p>
+            <p>In this example the <i>validateTwoInputs</i> function requires that either <i>input1</i> OR <i>input2</i> is filled in.</p>
+            <pre>
+              {`
+    function validateTwoInputs (input1, input2) {
+      return (input1 && input1.length > 0) || 
+             (input2 && input2.length > 0);
+    }
+
+    [...]
+
+    <ValidatedForm onSubmit={(e, formVals) => console.log(formVals)}>
+
+      <label htmlFor='example3-input1'>Input 1:</label>
+      <input type='text' name='input1' id='example3-input1' />  
+
+      <FormGuard 
+          watches={['input1', 'input2']} 
+          validatesWith={validateTwoInputs} >
+          
+          Either input 1 OR input 2 is required.
+      </FormGuard> 
+
+      <label htmlFor='example3-input2'>Input 2:</label>
+      <input type='text' name='input2' id='example3-input2' />  
+
+      <input type='submit' value='Check the console for onSubmit' />
+    </ValidatedForm>
+            `}
+            </pre>
+          </div>
+          <div className='example-implementation'>
+            <ExampleFieldsets />
           </div>
         </div>
 

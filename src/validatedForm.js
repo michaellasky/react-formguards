@@ -3,6 +3,7 @@
 /* eslint-disable react/prop-types */
 import React, { cloneElement, useState, useRef, useEffect } from 'react';
 import FormGuard from './formGuard';
+import deepExtend from 'deep-extend';
 
 const asArray = val => Array.isArray(val) ? val : [val];
 
@@ -18,6 +19,7 @@ const ValidatedForm = ({
   id,
   name,
   onSubmit,
+  useFieldsets = false,
   formVals = {}
 }) => {
   // stateBuffer accumulates state changes while the FormGuard tags are being
@@ -46,7 +48,6 @@ const ValidatedForm = ({
     .length > 0;
 
   if (hasNewState) { setState(mergeState(state, stateBuffer)); }
-
   useEffect(invalidateForm, [vals]);
 
   return (
@@ -57,23 +58,27 @@ const ValidatedForm = ({
 
   // This function walks through the children recursively and
   // replaces form elements with managed versions
-  function injectProps (childNodes = []) {
+  function injectProps (childNodes = [], fieldsets = []) {
+
     return React.Children.map(childNodes, (el, key) => {
       if (!el || !el.props) { return el; }
 
-      const { props: { children }, type } = el;
-      const injected = injectProps(children);
-      const hasChildren = injected.length > 0;
+      const { props: { children, name }, type } = el;
       const isFormElement = ['input', 'select', 'textarea'].includes(type);
       const isGuard = type === FormGuard;
+      const isFieldset = type === 'fieldset';
+      const childFs = isFieldset? [ ...fieldsets, name ]: fieldsets;
+      
+      const injected = injectProps(children, childFs);
+      const hasChildren = injected.length > 0;
 
-      if      (isFormElement) { return handleFormElement(el, key);     }
-      else if (isGuard)       { return handleFormGuard(el, key);       }
-      else if (hasChildren)   { return cloneElement(el, {}, injected); }
-      else                    { return el; }
+      if      (isFormElement) { return handleFormElement(el, key, fieldsets); }
+      else if (isGuard)       { return handleFormGuard(el, key);              }
+      else if (hasChildren)   { return cloneElement(el, {}, injected);        }
+      else                    { return el;                                    }
     });
 
-    function handleFormElement (el, key) {
+    function handleFormElement (el, key, fieldsets) {
       function getNormalizedType (el) {
         const multiple = el.props.multiple;
         const [select, file] = [el.type === 'select', el.type === 'file'];
@@ -92,16 +97,22 @@ const ValidatedForm = ({
       }
 
       const name = el.props.name;
+      const propClassName = el.props.className || '';
       const elState = state[name] || {};
       const type = getNormalizedType(el);
       const value = determineValue(el, name, type);
+
       const onChange = (e) => _onChange(e, el.props.onChange);
       const onBlur = (e) => _onBlur(e, el.props.onBlur);
 
       const invalid = elState.isvalid === false;
       const className = invalid && elState.blurred === true
-        ? `${el.props.className || ''} input-invalid`
-        : el.props.className || '';
+        ? `${propClassName} input-invalid`
+        : propClassName;
+
+      if (fieldsets.length > 0 && state[name] && !state[name].fieldsets) {
+        stateBuffer[name].fieldsets = fieldsets;
+      }
 
       return ['submit', 'image', 'reset'].includes(type)
         ? el
@@ -115,7 +126,11 @@ const ValidatedForm = ({
       const isvalid = !!validatesWith.apply(null, value);
 
       // WARNING: Side Effect - This reducer also mutates stateBuffer
-      const [dirty, blurred] = watches.reduce(([groupDirty, blurred], name) => {
+      //
+      // sets dirty and blurred if any inputs a particular FormGuard watches
+      // are dirty or blurred.  If dirty or blurred gets set to true then the 
+      // whole array: watches should be set to dirty/blurred
+      const [dirty, blurred] = watches.reduce(([groupDirty, groupBlurred], name) => {
         stateBuffer[name] = stateBuffer[name] || {};
         const curState = mergeState(state[name], stateBuffer[name]);
         const curStateEmpty = Object.keys(curState).length === 0;
@@ -129,11 +144,12 @@ const ValidatedForm = ({
           stateBuffer[name].isvalid = isvalid;
         }
 
-        return [(groupDirty || curState.dirty), (blurred || curState.blurred)];
+        return [(groupDirty || curState.dirty), (groupBlurred || curState.blurred)];
       }, [false, false]);
 
-      // If any in the group are dirty or blurred it makes the whole group dirty
-      // or blurred.
+      // Sets dirty and blurred values for any state that doesn't already have
+      // the current value set.
+      //
       // TODO: Refactor this mess for dirty / blurred
       stateBuffer = {
         ...stateBuffer,
@@ -160,6 +176,7 @@ const ValidatedForm = ({
   function mergeState (state1, state2) {
     if (!state1 || !state2) { return (state1 || state2); }
 
+
     return {
       ...state1,
       ...Object.entries(state2).reduce(
@@ -170,8 +187,26 @@ const ValidatedForm = ({
   }
 
   function _onSubmit (e) {
+    function objWithSig (fieldsets, name, value) {
+      return fieldsets.reverse().reduce((acc, fs) => {
+        if (Object.keys(acc).length === 0) { return { [fs]: { [name]: value } }; }
+        return { [fs]: acc };
+      }, {});
+    }
+
     e.preventDefault();
-    formIsValid() ? onSubmit(e, vals, resetForm) : setFormDirty();
+    
+    // We need to process vals to merge in deep fieldsets
+    const values = Object.keys(vals).reduce((acc, name) => {
+      const fieldsets = state[name]? state[name].fieldsets || []: [];
+      if (useFieldsets && fieldsets.length > 0) {
+        return deepExtend(acc, objWithSig(fieldsets, name, vals[name]));
+      }
+
+      return ({ ...acc, [name]: vals[name] });
+    } ,{})
+
+    formIsValid() ? onSubmit(e, values, resetForm) : setFormDirty();
   }
 
   function _onChange (e, onChange = () => {}) {
@@ -179,9 +214,11 @@ const ValidatedForm = ({
 
     if (type === 'checkbox') {
       value = checked;
-    } else if (type === 'select' || type === 'select-multiple') {
+    } 
+    else if (type === 'select' || type === 'select-multiple') {
       value = Array.from(options).filter(o => o.selected).map(o => o.value);
-    } else if (type === 'file' || type === 'file-multiple') {
+    } 
+    else if (type === 'file' || type === 'file-multiple') {
       value = files;
     }
 
@@ -210,8 +247,8 @@ const ValidatedForm = ({
     setFormVals({});
   }
 
-  function setFormVal (name, val) {
-    setFormVals({ ...vals, [name]: val });
+  function setFormVal (name, value) {
+    setFormVals({ ...vals, [name]: value });
   }
 
   function setStateValueForAllElements (st) {
