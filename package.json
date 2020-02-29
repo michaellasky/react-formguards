@@ -93,6 +93,6 @@
     "validation"
   ],
   "dependencies": {
-    "deep-extend": "^0.6.0"
+    "deepmerge": "^4.2.2"
   }
 }

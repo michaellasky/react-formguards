@@ -21,6 +21,7 @@ const App = () => {
           <li><a href='#multiple'>Watching Multiple Elements With One FormGuard</a></li>
           <li><a href='#style'>Styling / CSS</a></li>
           <li><a href='#preset'>Passing Preset Values</a></li>
+          <li><a href='#fieldsets'>Grouping data with useFieldsets</a></li>
           <li><a href='#benchmark'>Performance / Large Forms With Many Elements</a></li>
         </ul>
 
@@ -270,36 +271,76 @@ const App = () => {
 
         <div id='fieldsets' className='example'>
           <div className='example-code'>
-            <h2>Fieldsets</h2>
-            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-multiple-watches.jsx'>Source</a>  -  <a href='#top'>Back to top</a>
-            <p>A FormGuard can watch multiple elements by passing an array to the <i>watches</i> prop</p>
-            <p>In this example the <i>validateTwoInputs</i> function requires that either <i>input1</i> OR <i>input2</i> is filled in.</p>
+            <h2>Grouping data with useFieldsets</h2>
+            <a href='https://github.com/NuclearHorseStudios/react-formguards/blob/master/example/src/examples/example-fieldsets.jsx'>Source</a>  -  <a href='#top'>Back to top</a>
+            <p>If you pass useFieldsets=true to a ValidatedForm it'll create sub-objects in the formVals passed to onSubmit based upon the fieldset hierarchy in the form. </p>
+            <p>In the example below, the data passed to onSubmit takes the form: </p>
+            <pre>{`
+            
+            {
+              person: {
+                name
+                contact-info: {
+                  email
+                  phone
+                }
+              }
+              comments
+            }
+            
+            `}</pre>
+
+            <p>If useFieldsets is false it'll have the form:</p>
+            <pre>{`
+            
+            {
+              name
+              email
+              phone
+              comments
+            }
+            
+            `}</pre>
             <pre>
               {`
-    function validateTwoInputs (input1, input2) {
-      return (input1 && input1.length > 0) || 
-             (input2 && input2.length > 0);
-    }
+    <ValidatedForm onSubmit={(e, formVals) => console.log(formVals)} useFieldsets={useFieldsets}>
+    <fieldset name="person">
+      <legend>Person</legend>
 
-    [...]
+      <label htmlFor='example7-name'>Name:</label>
+      <FormGuard watches='name' validatesWith={validators.required} >
+          Name is required
+      </FormGuard>
+      <input type='text' name='name' id='example7-name' />
+      <fieldset name="contact-info">
+        <legend>Contact Info</legend>
+  
+        <label htmlFor='example7-email'>Email:</label>
+        <FormGuard watches='email' validatesWith={validators.required} >
+                  Email is required
+        </FormGuard>
+        <FormGuard watches='email' validatesWith={validators.email} >
+                  Please enter a valid email address
+        </FormGuard>
+        <input type='email' name='email' id='example7-email' />
 
-    <ValidatedForm onSubmit={(e, formVals) => console.log(formVals)}>
+        <label htmlFor='example7-phone'>Telephone:</label>
+        <FormGuard watches='phone' validatesWith={validators.phone} >
+                  Please enter a valid phone number
+        </FormGuard>
+        <input type='tel' name='phone' id='example7-phone' />
 
-      <label htmlFor='example3-input1'>Input 1:</label>
-      <input type='text' name='input1' id='example3-input1' />  
+      </fieldset>
+    </fieldset>
+    
+    <label htmlFor='example7-comments'>Comments:</label>
+    <FormGuard watches='comments' validatesWith={validators.maxLength(80)} >
+              Maximum length (80 characters) exceeded
+    </FormGuard>
+    <textarea name='comments' id='example7-comments' />
 
-      <FormGuard 
-          watches={['input1', 'input2']} 
-          validatesWith={validateTwoInputs} >
-          
-          Either input 1 OR input 2 is required.
-      </FormGuard> 
-
-      <label htmlFor='example3-input2'>Input 2:</label>
-      <input type='text' name='input2' id='example3-input2' />  
-
-      <input type='submit' value='Check the console for onSubmit' />
-    </ValidatedForm>
+    <input type='submit' value='Check the console for onSubmit' />
+  </ValidatedForm>
             `}
             </pre>
           </div>

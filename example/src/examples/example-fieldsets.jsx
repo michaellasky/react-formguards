@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ValidatedForm, FormGuard, validators } from 'react-formguards'
 
 const ExampleFieldsets = () => {

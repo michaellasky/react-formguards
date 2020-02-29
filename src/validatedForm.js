@@ -3,7 +3,7 @@
 /* eslint-disable react/prop-types */
 import React, { cloneElement, useState, useRef, useEffect } from 'react';
 import FormGuard from './formGuard';
-import deepExtend from 'deep-extend';
+import deepmerge from 'deepmerge';
 
 const asArray = val => Array.isArray(val) ? val : [val];
 
@@ -47,7 +47,7 @@ const ValidatedForm = ({
     .filter(s => Object.keys(s).length > 0)
     .length > 0;
 
-  if (hasNewState) { setState(mergeState(state, stateBuffer)); }
+  if (hasNewState) { setState(deepmerge(state, stateBuffer)); }
   useEffect(invalidateForm, [vals]);
 
   return (
@@ -66,8 +66,8 @@ const ValidatedForm = ({
       const { props: { children, name }, type } = el;
       const isFormElement = ['input', 'select', 'textarea'].includes(type);
       const isGuard = type === FormGuard;
-      const isFieldset = type === 'fieldset';
-      const childFs = isFieldset? [ ...fieldsets, name ]: fieldsets;
+      const isFieldset = type === 'fieldset' && name;
+      const childFs = isFieldset? [ name, ...fieldsets ]: fieldsets;
       
       const injected = injectProps(children, childFs);
       const hasChildren = injected.length > 0;
@@ -106,7 +106,7 @@ const ValidatedForm = ({
       const onBlur = (e) => _onBlur(e, el.props.onBlur);
 
       const invalid = elState.isvalid === false;
-      const className = invalid && elState.blurred === true
+      const className = invalid && elState.blurred
         ? `${propClassName} input-invalid`
         : propClassName;
 
@@ -128,23 +128,26 @@ const ValidatedForm = ({
       // WARNING: Side Effect - This reducer also mutates stateBuffer
       //
       // sets dirty and blurred if any inputs a particular FormGuard watches
-      // are dirty or blurred.  If dirty or blurred gets set to true then the 
-      // whole array: watches should be set to dirty/blurred
-      const [dirty, blurred] = watches.reduce(([groupDirty, groupBlurred], name) => {
-        stateBuffer[name] = stateBuffer[name] || {};
-        const curState = mergeState(state[name], stateBuffer[name]);
-        const curStateEmpty = Object.keys(curState).length === 0;
-        const markValid = isvalid && curState.isvalid === undefined;
-        const invalidate = !isvalid && curState.isvalid !== false;
+      // array are dirty or blurred.  If dirty or blurred gets set to true 
+      // then the whole array: watches should be set to dirty/blurred
+      const [dirty, blurred] = watches.reduce(
+        ([groupDirty, groupBlurred], name) => {
+          stateBuffer[name] = stateBuffer[name] || {};
+          const curState = state[name] || {};
+          const markValid = isvalid && curState.isvalid === undefined;
+          const invalidate = !isvalid && curState.isvalid !== false;
 
-        if (curStateEmpty || !curState.validated) {
-          stateBuffer[name].validated = true;
-        }
-        if (invalidate || markValid) {
-          stateBuffer[name].isvalid = isvalid;
-        }
+          if (!curState.validated) {
+            stateBuffer[name].validated = true;
+          }
+          if (invalidate || markValid) {
+            stateBuffer[name].isvalid = isvalid;
+          }
 
-        return [(groupDirty || curState.dirty), (groupBlurred || curState.blurred)];
+          return [
+            (groupDirty || curState.dirty), 
+            (groupBlurred || curState.blurred)
+          ];
       }, [false, false]);
 
       // Sets dirty and blurred values for any state that doesn't already have
@@ -173,38 +176,27 @@ const ValidatedForm = ({
     }
   }
 
-  function mergeState (state1, state2) {
-    if (!state1 || !state2) { return (state1 || state2); }
-
-
-    return {
-      ...state1,
-      ...Object.entries(state2).reduce(
-        (acc, [name, elState]) =>
-          ({ ...acc, [name]: { ...state1[name], ...elState } }),
-        {})
-    }
-  }
-
   function _onSubmit (e) {
-    function objWithSig (fieldsets, name, value) {
-      return fieldsets.reverse().reduce((acc, fs) => {
-        if (Object.keys(acc).length === 0) { return { [fs]: { [name]: value } }; }
-        return { [fs]: acc };
-      }, {});
+
+    function objWithSig (fsArray, name, value) {
+      return fsArray.reduce((acc, fs) => 
+        Object.keys(acc).length === 0
+          ? ({ [fs]: { [name]: value } })
+          : ({ [fs]: acc })
+      , {});
     }
 
     e.preventDefault();
-    
+
     // We need to process vals to merge in deep fieldsets
     const values = Object.keys(vals).reduce((acc, name) => {
       const fieldsets = state[name]? state[name].fieldsets || []: [];
       if (useFieldsets && fieldsets.length > 0) {
-        return deepExtend(acc, objWithSig(fieldsets, name, vals[name]));
+        return deepmerge(acc, objWithSig(fieldsets, name, vals[name]));
       }
 
       return ({ ...acc, [name]: vals[name] });
-    } ,{})
+    } ,{});
 
     formIsValid() ? onSubmit(e, values, resetForm) : setFormDirty();
   }
@@ -225,7 +217,7 @@ const ValidatedForm = ({
     setFormVal(name, value);
 
     if (!isDirty(name)) {
-      setState(mergeState(state, { [name]: { dirty: true } }));
+      setState(deepmerge(state, { [name]: { dirty: true } }));
     }
 
     onChange(e);
@@ -235,7 +227,7 @@ const ValidatedForm = ({
     const { target: { name } } = e;
 
     if (state[name] && !state[name].blurred) {
-      setState(mergeState(state, { [name]: { blurred: true } }));
+      setState(deepmerge(state, { [name]: { blurred: true } }));
     }
 
     onBlur(e);
