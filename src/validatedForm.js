@@ -48,6 +48,7 @@ const ValidatedForm = ({
     .length > 0;
 
   if (hasNewState) { setState(deepmerge(state, stateBuffer)); }
+  
   useEffect(invalidateForm, [vals]);
 
   return (
@@ -57,7 +58,8 @@ const ValidatedForm = ({
   );
 
   // This function walks through the children recursively and
-  // replaces form elements with managed versions
+  // replaces form elements with managed versions as well as processing 
+  // <FormGuard /> tags
   function injectProps (childNodes = [], fieldsets = []) {
 
     return React.Children.map(childNodes, (el, key) => {
@@ -178,8 +180,10 @@ const ValidatedForm = ({
 
   function _onSubmit (e) {
 
-    function objWithSig (fsArray, name, value) {
-      return fsArray.reduce((acc, fs) => 
+    // Given the input: ['some', 'text'], 'foo', 'bar' will return 
+    // { some: { text: { foo: 'bar' }}}
+    function objWithShape (shape, name, value) {
+      return shape.reduce((acc, fs) => 
         Object.keys(acc).length === 0
           ? ({ [fs]: { [name]: value } })
           : ({ [fs]: acc })
@@ -192,7 +196,7 @@ const ValidatedForm = ({
     const values = Object.keys(vals).reduce((acc, name) => {
       const fieldsets = state[name]? state[name].fieldsets || []: [];
       if (useFieldsets && fieldsets.length > 0) {
-        return deepmerge(acc, objWithSig(fieldsets, name, vals[name]));
+        return deepmerge(acc, objWithShape(fieldsets, name, vals[name]));
       }
 
       return ({ ...acc, [name]: vals[name] });
@@ -240,12 +244,12 @@ const ValidatedForm = ({
   }
 
   function setFormVal (name, value) {
-    setFormVals({ ...vals, [name]: value });
+    setFormVals(deepmerge(vals, { [name]: value }));
   }
 
   function setStateValueForAllElements (st) {
     setState(Object.entries(state).reduce(
-      (acc, [name, elState]) =>
+      (acc, [name, elState]) => 
         ({ ...acc, [name]: { ...elState, ...st } }),
       {}
     ));
