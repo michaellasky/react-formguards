@@ -135,7 +135,7 @@ const ValidatedForm = ({
       // sets dirty and blurred if any inputs a particular FormGuard watches
       // array are dirty or blurred.  If dirty or blurred gets set to true 
       // then the whole array: watches should be set to dirty/blurred
-      const [dirty, blurred] = watches.reduce(
+      const [groupDirty, groupBlurred] = watches.reduce(
         ([groupDirty, groupBlurred], name) => {
           stateBuffer[name] = stateBuffer[name] || {};
           const curState = state[name] || {};
@@ -164,20 +164,20 @@ const ValidatedForm = ({
         ...watches.reduce(
           (acc, name) => ({
             ...acc,
-            [name]: isDirty(name) === dirty
+            [name]: isDirty(name) === groupDirty
               ? stateBuffer[name]
-              : { ...stateBuffer[name], dirty } }),
+              : { ...stateBuffer[name], groupDirty } }),
           {}),
         ...watches.reduce(
           (acc, name) => ({
             ...acc,
-            [name]: hasBeenBlurred(name) === blurred
+            [name]: hasBeenBlurred(name) === groupBlurred
               ? stateBuffer[name]
-              : { ...stateBuffer[name], blurred } }),
+              : { ...stateBuffer[name], groupBlurred } }),
           {})
       };
 
-      return cloneElement(el, { key, value, dirty, isvalid });
+      return cloneElement(el, { key, value, dirty: groupDirty, isvalid });
     }
   }
 
