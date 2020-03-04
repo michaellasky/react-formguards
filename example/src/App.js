@@ -304,6 +304,7 @@ const App = () => {
             <pre>
               {`
     <ValidatedForm onSubmit={(e, formVals) => console.log(formVals)} useFieldsets={useFieldsets}>
+    
     <fieldset name="person">
       <legend>Person</legend>
 
@@ -312,6 +313,7 @@ const App = () => {
           Name is required
       </FormGuard>
       <input type='text' name='name' id='example7-name' />
+      
       <fieldset name="contact-info">
         <legend>Contact Info</legend>
   
