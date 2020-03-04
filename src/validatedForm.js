@@ -33,22 +33,26 @@ const ValidatedForm = ({
   //  dirty: has the control been changed?
   //  validated: set by FormGuard to true if the input is being watched
   //  isvalid: true when all the conditions of all watching FormGuards are met
+  //  fieldsets: If the form control is nested within fieldsets this will be 
+  //    an array with each element being a fieldset name in the hierarchy
   //  blurred: true after the control has been focused and blurred once
   //    Once an element has been blurred we know it's not the
   //    initial change or click
   //    See: https://github.com/michaellasky/react-formguards/issues/7
+
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(formVals);
   const formRef = useRef(null);
   const managedChildren = injectProps(children);
 
+  // The statebuffer might be mutated after injectProps above
   const hasNewState = Object
     .values(stateBuffer)
     .filter(s => Object.keys(s).length > 0)
     .length > 0;
 
   if (hasNewState) { setState(deepmerge(state, stateBuffer)); }
-  
+
   useEffect(invalidateForm, [vals]);
 
   return (
@@ -66,6 +70,7 @@ const ValidatedForm = ({
       if (!el || !el.props) { return el; }
 
       const { props: { children, name }, type } = el;
+      
       const isFormElement = ['input', 'select', 'textarea'].includes(type);
       const isGuard = type === FormGuard;
       const isFieldset = type === 'fieldset' && name;
@@ -127,8 +132,6 @@ const ValidatedForm = ({
       const value = watches.map(name => vals[name] || '');
       const isvalid = !!validatesWith.apply(null, value);
 
-      // WARNING: Side Effect - This reducer also mutates stateBuffer
-      //
       // sets dirty and blurred if any inputs a particular FormGuard watches
       // array are dirty or blurred.  If dirty or blurred gets set to true 
       // then the whole array: watches should be set to dirty/blurred
@@ -180,6 +183,8 @@ const ValidatedForm = ({
 
   function _onSubmit (e) {
 
+    e.preventDefault();
+    
     // Given the input: ['some', 'text'], 'foo', 'bar' will return 
     // { some: { text: { foo: 'bar' }}}
     function objWithShape (shape, name, value) {
@@ -189,8 +194,6 @@ const ValidatedForm = ({
           : ({ [fs]: acc })
       , {});
     }
-
-    e.preventDefault();
 
     // We need to process vals to merge in deep fieldsets
     const values = Object.keys(vals).reduce((acc, name) => {
@@ -264,13 +267,11 @@ const ValidatedForm = ({
   }
 
   function isDirty (name) {
-    return (stateBuffer[name] && stateBuffer[name].dirty) ||
-           (state[name] && state[name].dirty);
+    return state[name] && state[name].dirty;
   }
 
   function hasBeenBlurred (name) {
-    return (stateBuffer[name] && stateBuffer[name].blurred) ||
-           (state[name] && state[name].blurred);
+    return state[name] && state[name].blurred;
   }
 
   function formIsValid () {
