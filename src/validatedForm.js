@@ -118,6 +118,8 @@ const ValidatedForm = ({
         : propClassName;
 
       if (fieldsets.length > 0 && state[name] && !state[name].fieldsets) {
+        if (!stateBuffer[name]) { stateBuffer[name] = {}; }
+        
         stateBuffer[name].fieldsets = fieldsets;
       }
 
