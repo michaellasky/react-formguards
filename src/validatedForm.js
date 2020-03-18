@@ -45,13 +45,6 @@ const ValidatedForm = ({
   const formRef = useRef(null);
   const managedChildren = injectProps(children);
 
-  function flattenObj (obj) {
-    return Object.entries(obj).reduce((acc, [key, val]) => {
-      const isObj = typeof val === 'object' && !(val instanceof Array);
-      return { ...acc, ...(isObj? flattenObj(val): { [key]: val }) }
-    }, {});
-  }
-
   // The statebuffer might be mutated after injectProps above
   const hasNewState = Object
     .values(stateBuffer)
@@ -290,6 +283,13 @@ const ValidatedForm = ({
       .values(state)
       .filter(s => s.validated && !s.isvalid)
       .length === 0;
+  }
+
+  function flattenObj (obj) {
+    return Object.entries(obj).reduce((acc, [key, val]) => {
+      const isObj = typeof val === 'object' && !(val instanceof Array);
+      return { ...acc, ...(isObj? flattenObj(val): { [key]: val }) }
+    }, {});
   }
 }
 
