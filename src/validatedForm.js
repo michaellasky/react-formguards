@@ -124,7 +124,6 @@ const ValidatedForm = ({
         ? `${propClassName} input-invalid`
         : propClassName;
 
-      debugger;
       if (fieldsets.length > 0) {
         if (!stateBuffer[name]) { stateBuffer[name] = {}; }
         
