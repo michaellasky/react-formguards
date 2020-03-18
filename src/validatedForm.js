@@ -41,9 +41,16 @@ const ValidatedForm = ({
   //    See: https://github.com/michaellasky/react-formguards/issues/7
 
   const [state, setState] = useState({});
-  const [vals, setFormVals] = useState(formVals);
+  const [vals, setFormVals] = useState(flattenObj(formVals));
   const formRef = useRef(null);
   const managedChildren = injectProps(children);
+
+  function flattenObj (obj) {
+    return Object.entries(obj).reduce((acc, [key, val]) => {
+      const isObj = typeof val === 'object' && !(val instanceof Array);
+      return { ...acc, ...(isObj? flattenObj(val): { [key]: val }) }
+    }, {});
+  }
 
   // The statebuffer might be mutated after injectProps above
   const hasNewState = Object
@@ -117,10 +124,13 @@ const ValidatedForm = ({
         ? `${propClassName} input-invalid`
         : propClassName;
 
-      if (fieldsets.length > 0 && state[name] && !state[name].fieldsets) {
+      debugger;
+      if (fieldsets.length > 0) {
         if (!stateBuffer[name]) { stateBuffer[name] = {}; }
         
-        stateBuffer[name].fieldsets = fieldsets;
+        if (!state[name] || !state[name].fieldsets) {
+          stateBuffer[name].fieldsets = fieldsets;
+        }
       }
 
       return ['submit', 'image', 'reset'].includes(type)
