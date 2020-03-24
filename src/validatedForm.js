@@ -52,7 +52,7 @@ const ValidatedForm = ({
     .length > 0;
 
   if (hasNewState) { setState(deepmerge(state, stateBuffer)); }
-  debugger;
+
   useEffect(invalidateForm, [vals]);
 
   return (
