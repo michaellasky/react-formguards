@@ -52,7 +52,7 @@ const ValidatedForm = ({
     .length > 0;
 
   if (hasNewState) { setState(deepmerge(state, stateBuffer)); }
-
+  debugger;
   useEffect(invalidateForm, [vals]);
 
   return (
@@ -170,14 +170,14 @@ const ValidatedForm = ({
             ...acc,
             [name]: isDirty(name) === groupDirty
               ? stateBuffer[name]
-              : { ...stateBuffer[name], groupDirty } }),
+              : { ...stateBuffer[name], dirty: groupDirty } }),
           {}),
         ...watches.reduce(
           (acc, name) => ({
             ...acc,
             [name]: hasBeenBlurred(name) === groupBlurred
               ? stateBuffer[name]
-              : { ...stateBuffer[name], groupBlurred } }),
+              : { ...stateBuffer[name], blurred: groupBlurred } }),
           {})
       };
 
