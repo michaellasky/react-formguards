@@ -38,7 +38,6 @@ const ValidatedForm = ({
   //  blurred: true after the control has been focused and blurred once
   //    Once an element has been blurred we know it's not the
   //    initial change or click
-  //    See: https://github.com/michaellasky/react-formguards/issues/7
 
   const [state, setState] = useState({});
   const [vals, setFormVals] = useState(flattenObj(formVals));
@@ -61,9 +60,9 @@ const ValidatedForm = ({
     </form>
   );
 
-  // This function walks through the children recursively and
-  // replaces form elements with managed versions as well as processing 
-  // <FormGuard /> tags
+  // injectProps recursively walks through all the child nodes passing any 
+  // form elements to handleFormElement() and any FormGuard elements to 
+  // handleFormGuard().  
   function injectProps (childNodes = [], fieldsets = []) {
 
     return React.Children.map(childNodes, (el, key) => {
@@ -85,6 +84,12 @@ const ValidatedForm = ({
       else                    { return el;                                    }
     });
 
+    // handleFormElement 
+    // - attaches custom onChange and onBlur event handlers to the given form 
+    //   element.
+    // - updates the stateBuffer with any fieldsets the control is encapsulated 
+    //   within
+    // - applies input-invalid css class to the form element as needed
     function handleFormElement (el, key, fieldsets) {
       function getNormalizedType (el) {
         const multiple = el.props.multiple;
@@ -130,15 +135,18 @@ const ValidatedForm = ({
         : cloneElement(el, { key, className, value, onChange, onBlur });
     }
 
+    // handleFormGuard
+    // - Checks all elements the particular guard should be watching for 
+    //   validity and updates respective validated, isvalid, dirty, and blurred 
+    //   states in the mutable stateBuffer object.
     function handleFormGuard (el, key) {
       const validatesWith = el.props.validatesWith;
       const watches = asArray(el.props.watches);
       const value = watches.map(name => vals[name] || '');
       const isvalid = !!validatesWith.apply(null, value);
 
-      // sets dirty and blurred if any inputs a particular FormGuard watches
-      // array are dirty or blurred.  If dirty or blurred gets set to true 
-      // then the whole array: watches should be set to dirty/blurred
+      // If any elements in the watches array is dirty or blurred we need to set 
+      // the whole group of elements being watched to dirty and/or blurred.
       const [groupDirty, groupBlurred] = watches.reduce(
         ([groupDirty, groupBlurred], name) => {
           stateBuffer[name] = stateBuffer[name] || {};
