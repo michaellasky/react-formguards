@@ -18,7 +18,7 @@ h3 {
 section {
   background-color: #eee;
   width: 80%;
-  padding: 1em;
+  padding: 0.25em;
   margin: 1em;
   margin-left: auto;
   margin-right: auto;
@@ -101,7 +101,7 @@ pre {
 }
 
 section > ul {
-  width: 80%;
+  width: 95%;
   padding-left: 2em;
   box-sizing: border-box;
   border-radius: 0.5em;
@@ -118,15 +118,15 @@ ol > li {
 }
 
 ul > li {
-  margin: 0.25em;
+  margin: 0.45em;
 }
 
 div.example {
-  width: 80%;
+  width: 95%;
   padding: 0;
   box-sizing: border-box;
   border-radius: 0.5em;
-  margin: 2em;
+  margin: 0.5em;
   margin-left: auto;
   margin-right: auto;
 }
