@@ -48,9 +48,11 @@ const App = () => {
             </ol>
             <pre>{`
   <ValidatedForm onSubmit={(e, formVals) => console.log(formVals)}>
+
     <label htmlFor='example1-name'>Name:</label>
     <input type='text' name='name' id='example1-name' />
 
+  
     <label htmlFor='example1-email'>Email:</label>
     <FormGuard watches='email' validatesWith={validators.required} >
               Email is required
@@ -60,18 +62,21 @@ const App = () => {
     </FormGuard>
     <input type='email' name='email' id='example1-email' />
 
+  
     <label htmlFor='example1-phone'>Telephone:</label>
     <FormGuard watches='phone' validatesWith={validators.phone} >
               Please enter a valid phone number
     </FormGuard>
     <input type='tel' name='phone' id='example1-phone' />
 
+  
     <label htmlFor='example1-comments'>Comments:</label>
     <FormGuard watches='comments' validatesWith={validators.maxLength(80)} >
               Maximum length (80 characters) exceeded
     </FormGuard>
     <textarea name='comments' id='example1-comments' />
 
+  
     <FormGuard watches='radioButtons' validatesWith={validators.required} >
               Pick One!
     </FormGuard>
@@ -82,6 +87,7 @@ const App = () => {
     <input type='radio' name='radioButtons' value='Radio 3' id='example1-radioButtons3' />
     <label htmlFor='example1-radioButtons3'>Radio 3</label>
 
+  
     <br />
     <FormGuard
       watches={['checkBox1', 'checkBox2', 'checkBox3']}
@@ -114,11 +120,13 @@ const App = () => {
               {`
     <ValidatedForm onSubmit={(e, formVals) => console.log(formVals)}>
 
+
       <label htmlFor='example2-fzappa'>Must be Frank Zappa:</label>
       <FormGuard watches='fzappa' validatesWith={ val => val === 'Frank Zappa' } >
           Value must be "Frank Zappa"
       </FormGuard> 
       <input type='text' name='fzappa' id='example2-fzappa' />  
+    
       
       <input type='submit' value='Check the console for onSubmit' />
     </ValidatedForm>
@@ -233,8 +241,10 @@ const App = () => {
     [...]
 
     <ValidatedForm formVals={formVals} onSubmit={(e, formVals) => console.log(formVals)}>
+      
       <label htmlFor='example1-name'>Name:</label>
       <input type='text' name='name' id='example1-name' />
+
 
       <label htmlFor='example1-email'>Email:</label>
       <FormGuard watches='email' validatesWith={validators.required} >
@@ -245,11 +255,13 @@ const App = () => {
       </FormGuard> 
       <input type='email' name='email' id='example1-email' />  
       
+
       <label htmlFor='example1-phone'>Telephone:</label>
       <FormGuard watches='phone' validatesWith={validators.phone} >
           Please enter a valid phone number  
       </FormGuard> 
       <input type='tel' name='phone' id='example1-phone' />  
+
 
       <label htmlFor='example1-comments'>Comments:</label>
       <FormGuard watches='comments' validatesWith={validators.maxLength(80)} >
@@ -257,6 +269,7 @@ const App = () => {
       </FormGuard> 
       <textarea name='comments' id='example1-comments' />  
       
+
       <input type='submit' value='Check the console for onSubmit' />
     </ValidatedForm>
             `}
@@ -308,15 +321,18 @@ const App = () => {
     <fieldset name="person">
       <legend>Person</legend>
 
+
       <label htmlFor='example7-name'>Name:</label>
       <FormGuard watches='name' validatesWith={validators.required} >
           Name is required
       </FormGuard>
       <input type='text' name='name' id='example7-name' />
       
+
       <fieldset name="contact-info">
         <legend>Contact Info</legend>
   
+
         <label htmlFor='example7-email'>Email:</label>
         <FormGuard watches='email' validatesWith={validators.required} >
                   Email is required
@@ -325,6 +341,7 @@ const App = () => {
                   Please enter a valid email address
         </FormGuard>
         <input type='email' name='email' id='example7-email' />
+
 
         <label htmlFor='example7-phone'>Telephone:</label>
         <FormGuard watches='phone' validatesWith={validators.phone} >
@@ -335,12 +352,14 @@ const App = () => {
       </fieldset>
     </fieldset>
     
+
     <label htmlFor='example7-comments'>Comments:</label>
     <FormGuard watches='comments' validatesWith={validators.maxLength(80)} >
               Maximum length (80 characters) exceeded
     </FormGuard>
     <textarea name='comments' id='example7-comments' />
 
+    
     <input type='submit' value='Check the console for onSubmit' />
   </ValidatedForm>
             `}
