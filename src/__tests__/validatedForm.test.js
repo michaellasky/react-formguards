@@ -49,6 +49,32 @@ describe('ValidatedForm', () => {
     expect(queryByText('Error Message', container)).toBe(null);
   });
 
+
+  test('Sets css class input-invalid upon initial blur with invalid input', () => {
+    const onSubmit = jest.fn();
+
+    const { getByText, queryByText, getByLabelText, container } = render(
+      <ValidatedForm onSubmit={onSubmit}>
+        <FormGuard
+          watches={'theInput'}
+          validatesWith={val => false }>
+          Error Message
+        </FormGuard>
+        <label htmlFor='theInput'>Test:</label>
+        <input type='text' id='theInput' name='theInput' />
+
+        <input type='submit' value='Submit' />
+      </ValidatedForm>
+    );
+    const input = getByLabelText('Test:', container);
+    expect(input.className).toBe('');
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: 'Some Text' } });
+    fireEvent.blur(input);
+
+    expect(input.className.trim()).toBe('input-invalid');
+  });
+
   describe('Sets initial values equal to the formVals prop', () => {
 
     test('<input type=text />', () => {

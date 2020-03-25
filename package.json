@@ -93,7 +93,5 @@
     "form",
     "validation"
   ],
-  "dependencies": {
-    "deepmerge": "^4.2.2"
-  }
+  "dependencies": {}
 }

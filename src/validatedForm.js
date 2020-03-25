@@ -3,9 +3,6 @@
 /* eslint-disable react/prop-types */
 import React, { cloneElement, useState, useRef, useEffect } from 'react';
 import FormGuard from './formGuard';
-import deepmerge from 'deepmerge';
-
-const asArray = val => Array.isArray(val) ? val : [val];
 
 const defaultValues = {
   'checkbox': false,
@@ -50,7 +47,7 @@ const ValidatedForm = ({
     .filter(s => Object.keys(s).length > 0)
     .length > 0;
 
-  if (hasNewState) { setState(deepmerge(state, stateBuffer)); }
+  if (hasNewState) { setState(deepMerge(state, stateBuffer)); }
 
   useEffect(invalidateForm, [vals]);
 
@@ -200,7 +197,7 @@ const ValidatedForm = ({
     const values = Object.keys(vals).reduce((acc, name) => {
       const fieldsets = state[name]? state[name].fieldsets || []: [];
       if (useFieldsets && fieldsets.length > 0) {
-        return deepmerge(acc, objWithShape(fieldsets, name, vals[name]));
+        return deepMerge(acc, objWithShape(fieldsets, name, vals[name]));
       }
 
       return ({ ...acc, [name]: vals[name] });
@@ -225,7 +222,7 @@ const ValidatedForm = ({
     setFormVal(name, value);
 
     if (!isDirty(name)) {
-      setState(deepmerge(state, { [name]: { dirty: true } }));
+      setStateVal(name, 'dirty', true);
     }
 
     onChange(e);
@@ -235,7 +232,7 @@ const ValidatedForm = ({
     const { target: { name } } = e;
 
     if (state[name] && !state[name].blurred) {
-      setState(deepmerge(state, { [name]: { blurred: true } }));
+      setStateVal(name, 'blurred', true);
     }
 
     onBlur(e);
@@ -273,6 +270,31 @@ const ValidatedForm = ({
 
   function hasBeenBlurred (name) {
     return state[name] && state[name].blurred;
+  }
+
+  function setStateVal(name, key, val) {
+    setState({ ...state, [name]: { ...state[name], [key]: val } });
+  }
+
+  function asArray (val) { return Array.isArray(val) ? val : [val]; }
+
+  function isObj(val) {
+    return typeof val === 'object' && !(val instanceof Array);
+  }
+
+  // TODO: Refactor, this function is brittle and may not work for more complex
+  // object hierarchies.
+  function deepMerge(obj1, obj2) {
+    for (let key in obj2) {
+      if (isObj(obj1[key]) && isObj(obj2[key])) {
+        obj1[key] = deepMerge(obj1[key], obj2[key]);
+      }
+      else {
+        obj1[key] = obj2[key];
+      }
+    }
+
+    return obj1;
   }
 
   function formIsValid () {
