@@ -1,5 +1,5 @@
 # react-formguards
-> Simple, declarative, client side form validation - 3kb minzipped
+> Simple, declarative, client side form validation - 2.5kb minzipped
 
 [![NPM](https://img.shields.io/npm/v/react-formguards.svg)](https://www.npmjs.com/package/react-formguards) [![SIZE](https://img.shields.io/bundlephobia/minzip/react-formguards/latest.svg)](https://bundlephobia.com/result?p=react-formguards) [![Build Status](https://travis-ci.com/michaellasky/react-formguards.svg?branch=master)](https://travis-ci.com/michaellasky/react-formguards) [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors) 
 
