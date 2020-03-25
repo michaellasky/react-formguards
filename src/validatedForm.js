@@ -306,8 +306,7 @@ const ValidatedForm = ({
 
   function flattenObj (obj) {
     return Object.entries(obj).reduce((acc, [key, val]) => {
-      const isObj = typeof val === 'object' && !(val instanceof Array);
-      return { ...acc, ...(isObj? flattenObj(val): { [key]: val }) }
+      return { ...acc, ...(isObj(val)? flattenObj(val): { [key]: val }) }
     }, {});
   }
 }
