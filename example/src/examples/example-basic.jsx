@@ -31,25 +31,32 @@ const ExampleBasic = () => {
       <FormGuard watches='radioButtons' validatesWith={validators.required} >
                 Pick One!
       </FormGuard>
+
       <input type='radio' name='radioButtons' value='Radio 1' id='example1-radioButtons1' />
       <label htmlFor='example1-radioButtons1'>Radio 1</label>
+      <br />
       <input type='radio' name='radioButtons' value='Radio 2' id='example1-radioButtons2' />
       <label htmlFor='example1-radioButtons2'>Radio 2</label>
+      <br />
       <input type='radio' name='radioButtons' value='Radio 3' id='example1-radioButtons3' />
       <label htmlFor='example1-radioButtons3'>Radio 3</label>
+      <br /><br />
 
-      <br />
       <FormGuard
         watches={['checkBox1', 'checkBox2', 'checkBox3']}
         validatesWith={(cb1, cb2, cb3) => { return cb1 || cb2 || cb3 }} >
                 Pick One!
       </FormGuard>
+      
       <input type='checkbox' name='checkBox1' id='example1-checkbox1' />
       <label htmlFor='example1-checkbox1'>Check 1</label>
+      <br />
       <input type='checkbox' name='checkBox2' id='example1-checkbox2' />
       <label htmlFor='example1-checkbox2'>Check 2</label>
+      <br />
       <input type='checkbox' name='checkBox3' id='example1-checkbox3' />
       <label htmlFor='example1-checkbox3'>Check 3</label>
+      <br /><br />
 
       <input type='submit' value='Check the console for onSubmit' />
     </ValidatedForm>

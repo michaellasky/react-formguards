@@ -17,9 +17,8 @@ h3 {
 
 section {
   background-color: #eee;
-  width: 80%;
+  width: 95%;
   padding: 0.25em;
-  margin: 1em;
   margin-left: auto;
   margin-right: auto;
   border-radius: 0.5em;
@@ -100,8 +99,7 @@ pre {
 }
 
 section > ul {
-  width: 95%;
-  padding-left: 2em;
+  width: 100%;
   box-sizing: border-box;
   border-radius: 0.5em;
   margin: 2em;
@@ -121,24 +119,23 @@ ul > li {
 }
 
 div.example {
-  width: 95%;
-  padding: 0;
+  width: 100%;
+  padding: 0.5em;
   box-sizing: border-box;
   border-radius: 0.5em;
-  margin: 0.5em;
-  margin-left: auto;
-  margin-right: auto;
+  margin-bottom: 4em;
+  margin-top: 2em;
 }
 
 div.example-code {
   font-size: 0.9em;
-  padding: 1em;
 }
 
 div.example-implementation {
-  margin: 1em;
-  padding: 2em;
+  margin: 0.25em;
+  margin-top: 2em;
+  padding: 0.5em;
   box-sizing: border-box;
-  border-radius: 1em;
+  border-radius: 0.25em;
   box-shadow: 0 0 25px #ddd inset;
 }
