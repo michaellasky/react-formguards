@@ -22,8 +22,8 @@ const ValidatedForm = ({
   useFieldsets = false,
   formVals = {}
 }) => {
-  // stateBuffer accumulates state changes while the FormGuard tags are being
-  // processed with injectProps->handleformGuard.
+  // stateBuffer accumulates state changes while the child elements tags are 
+  // being processed with injectProps
   // ...allowing us to only call setState once, after all FormGuards have been
   // processed.
   // See; https://github.com/michaellasky/react-formguards/issues/5
@@ -147,7 +147,7 @@ const ValidatedForm = ({
 
       // If any elements in the watches array is dirty or blurred we need to set 
       // the whole group of elements being watched to dirty and/or blurred.
-      const [groupDirty, groupBlurred] = watches.reduce(
+      const [dirty, blurred] = watches.reduce(
         ([groupDirty, groupBlurred], name) => {
           stateBuffer[name] = stateBuffer[name] || {};
           const curState = state[name] || {};
@@ -169,27 +169,16 @@ const ValidatedForm = ({
 
       // Sets dirty and blurred values for any state that doesn't already have
       // the current value set.
-      //
-      // TODO: Refactor this mess for dirty / blurred
-      stateBuffer = {
-        ...stateBuffer,
-        ...watches.reduce(
-          (acc, name) => ({
-            ...acc,
-            [name]: isDirty(name) === groupDirty
-              ? stateBuffer[name]
-              : { ...stateBuffer[name], dirty: groupDirty } }),
-          {}),
-        ...watches.reduce(
-          (acc, name) => ({
-            ...acc,
-            [name]: hasBeenBlurred(name) === groupBlurred
-              ? stateBuffer[name]
-              : { ...stateBuffer[name], blurred: groupBlurred } }),
-          {})
-      };
+      for (const name in watches) {
+        if (dirty && !isDirty(name)) {
+          stateBuffer[name] = { ...(stateBuffer[name] || {}), dirty };
+        }
+        if (blurred && !hasBeenBlurred(name)) {
+          stateBuffer[name] = { ...(stateBuffer[name] || {}), blurred };
+        }
+      }
 
-      return cloneElement(el, { key, value, dirty: groupDirty, isvalid });
+      return cloneElement(el, { key, value, dirty, isvalid });
     }
   }
 
@@ -259,7 +248,7 @@ const ValidatedForm = ({
   }
 
   function setFormVal (name, value) {
-    setFormVals(deepmerge(vals, { [name]: value }));
+    setFormVals({...vals, [name]: value });
   }
 
   function setStateValueForAllElements (st) {
